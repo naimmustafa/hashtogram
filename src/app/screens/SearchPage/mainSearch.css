@@ -1,0 +1,65 @@
+.search-bar-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.result {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  background-color: gray;
+  width: 80%;
+  align-items: center;
+  text-align: center;
+  flex-direction: row;
+}
+
+.example {
+  margin-top: 10%;
+  width: 50%;
+}
+
+.example input[type=text] {
+  padding: 10px;
+  font-size: 17px;
+  border: 1px solid grey;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  float: left;
+  width: 80%;
+  background: #f1f1f1;
+}
+
+.example button {
+  float: left;
+  width: 20%;
+  padding: 10px;
+  background: #2196F3;
+  color: white;
+  font-size: 17px;
+  border: 1px solid grey;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-left: none;
+  cursor: pointer;
+}
+
+.example button:hover {
+  background: #0b7dda;
+}
+
+.example::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.instagram-images {
+  width: 50px;
+  height: 50px;
+  margin-top: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
