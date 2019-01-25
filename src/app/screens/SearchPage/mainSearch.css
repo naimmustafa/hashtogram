@@ -21,7 +21,7 @@
   width: 50%;
 }
 
-.example input[type=text] {
+.example input[type="text"] {
   padding: 10px;
   font-size: 17px;
   border: 1px solid grey;
@@ -36,7 +36,7 @@
   float: left;
   width: 20%;
   padding: 10px;
-  background: #2196F3;
+  background: #2196f3;
   color: white;
   font-size: 17px;
   border: 1px solid grey;
@@ -62,4 +62,10 @@
   margin-top: 5px;
   margin-left: 5px;
   margin-right: 5px;
+}
+
+.bottom-add {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
 }
