@@ -3,39 +3,31 @@ import { FaSistrix } from "react-icons/fa";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as actions from "../../utils/actions";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 import _ from "lodash";
 import "./mainSearch.css";
 
 class MainSearch extends Component {
-  shuffle(array) {
-    let currentIndex = array.length,
-      temporaryValue,
-      randomIndex;
-    while (0 !== currentIndex) {
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-      temporaryValue = array[currentIndex];
-      array[currentIndex] = array[randomIndex];
-      array[randomIndex] = temporaryValue;
-    }
-    return array;
-  }
 
   filterHashtags() {
     const { data } = this.props;
     const re = new RegExp("(?:^|[ ])#([a-zA-Z0-9]+)", "g");
     const match = data.match(re);
-    const shuff = match !== null ? this.shuffle(match) : null;
-    const unique = [...new Set(match)];
+    const dups =
+      match === null ? null : match.filter((v, i, a) => a.indexOf(v) < i);
+    const unique = [...new Set(dups)];
     const sorted = _.chunk(unique, 30).map(item => {
       return item;
     });
-      // redux edits
+    // redux edits
     return sorted.map((item, index) => {
       if (data.length > 0 && item.length === 30) {
         return (
           <div key={index} className="result">
             <p>{item}</p>
+            <CopyToClipboard text={item}>
+              <button>Copy Tags</button>
+            </CopyToClipboard>
           </div>
         );
       } else {
@@ -63,7 +55,7 @@ class MainSearch extends Component {
   }
 
   render() {
-    const { actions, word } = this.props;
+    const { actions, word, isFecthing } = this.props;
     return (
       <div className="search-bar-container">
         <iframe
@@ -92,9 +84,8 @@ class MainSearch extends Component {
             <FaSistrix />
           </button>
         </div>
-        {this.filterHashtags()}
+        {isFecthing ? null : this.filterHashtags()}
         <div className="result">{this.filterImages()}</div>
-        <button type="button" onClick={() => actions.addFetch()}>press</button>
         <iframe
           className="bottom-ad"
           title="bottom-ad"
@@ -112,7 +103,8 @@ class MainSearch extends Component {
 const mapStateToProps = state => {
   return {
     data: state.data.data,
-    word: state.data.word
+    word: state.data.word,
+    isFecthing: state.data.isFecthing
   };
 };
 

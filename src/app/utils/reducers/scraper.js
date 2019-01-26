@@ -2,7 +2,8 @@ import { FETCH_DATA, SEARCH_WORD } from "../actions/types";
 
 const INIT_STATE = {
   data: "",
-  word: ""
+  word: "",
+  isFecthing: false
 };
 
 export default (state = INIT_STATE, action) => {

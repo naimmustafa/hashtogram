@@ -22,10 +22,3 @@ export const searchWord = word => {
     payload: searchText
   }
 }
-
-export const addFetch = () => {
-  return dispatch => {
-    axios.get("//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=f6d8a7c9-0267-4d21-86a3-ec7804800d08")
-    .then(response => console.log(response))
-  }
-}
