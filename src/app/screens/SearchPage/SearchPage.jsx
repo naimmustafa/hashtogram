@@ -26,7 +26,7 @@ class MainSearch extends Component {
         return (
           <div key={index} className="result">
             <p>{item}</p>
-            <CopyToClipboard text={item}>
+            <CopyToClipboard text={item.join().replace(/[ ]*,[ ]*|[ ]+/g, ' ')}>
               <button>Copy Tags</button>
             </CopyToClipboard>
           </div>
@@ -63,14 +63,14 @@ class MainSearch extends Component {
     const { actions, word, isFecthing } = this.props;
     return (
       <div className="search-bar-container">
-          <iframe
-            title="ad"
-            src="//rcm-na.amazon-adsystem.com/e/cm?o=1&p=26&l=ur1&category=amazonhomepage&f=ifr&linkID=62a369a1962a379ef1a4e5e61d152dd3&t=dropexapp-20&tracking_id=dropexapp-20"
-            width="468"
-            height="60"
-            scrolling="no"
-            style={{ border: "none" }}
-          />
+        <iframe
+          title="ad"
+          src="//rcm-na.amazon-adsystem.com/e/cm?o=1&p=26&l=ur1&category=amazonhomepage&f=ifr&linkID=62a369a1962a379ef1a4e5e61d152dd3&t=dropexapp-20&tracking_id=dropexapp-20"
+          width="468"
+          height="60"
+          scrolling="no"
+          style={{ border: "none" }}
+        />
         <div className="example">
           <input
             type="text"
