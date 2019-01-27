@@ -1,9 +1,24 @@
-import { FETCH_DATA, SEARCH_WORD } from "./types";
+import { FETCH_DATA, SEARCH_WORD, LOAD_SPINNER, KILL_SPINNER } from "./types";
 
 import axios from "axios";
 
+export const loginSpinner = () => {
+  return {
+    type: "LOAD_SPINNER",
+    payload: true
+  };
+};
+
+export const killSpinner = () => {
+  return {
+    type: "KILL_SPINNER",
+    payload: false
+  };
+};
+
 export const fetchData = hastag => {
   return dispatch => {
+    dispatch(loginSpinner());
     axios
       .get(`https://www.instagram.com/explore/tags/${hastag}/`)
       .then(response => {
@@ -11,14 +26,18 @@ export const fetchData = hastag => {
           type: FETCH_DATA,
           payload: response.data
         });
-      }).catch(e => alert('Thats a no no word'))
+      })
+      .catch(e => {
+        alert("This page does not exist");
+        dispatch(killSpinner());
+      });
   };
 };
 
 export const searchWord = word => {
-  const searchText = word.replace(' ', '')
+  const searchText = word.replace(/\s/g,'');
   return {
-    type: 'SEARCH_WORD',
+    type: "SEARCH_WORD",
     payload: searchText
-  }
-}
+  };
+};

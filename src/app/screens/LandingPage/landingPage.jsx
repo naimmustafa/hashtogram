@@ -27,12 +27,7 @@ class Landing extends Component {
             </button>
           </Link>
         </div>
-        <div
-          className="content"
-          id="amzn-assoc-ad-1af49800-edac-4f01-a470-1cc6c951472d"
-        >
-          {" "}
-        </div>
+          <div className="advert" id="amzn-assoc-ad-1af49800-edac-4f01-a470-1cc6c951472d" />
         <div className="content">
           <p className="landing-content">
             This is an search engine that filters best performing hashtags for

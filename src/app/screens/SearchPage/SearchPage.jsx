@@ -7,8 +7,9 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import _ from "lodash";
 import "./mainSearch.css";
 
-class MainSearch extends Component {
+import spinner from "./spinner.gif";
 
+class MainSearch extends Component {
   filterHashtags() {
     const { data } = this.props;
     const re = new RegExp("(?:^|[ ])#([a-zA-Z0-9]+)", "g");
@@ -54,18 +55,22 @@ class MainSearch extends Component {
     return null;
   }
 
+  spinner() {
+    return <img className="spinner" src={spinner} alt="loading..." />;
+  }
+
   render() {
     const { actions, word, isFecthing } = this.props;
     return (
       <div className="search-bar-container">
-        <iframe
-          title="ad"
-          src="//rcm-na.amazon-adsystem.com/e/cm?o=1&p=48&l=ur1&category=amazonhomepage&f=ifr&linkID=62fceacb788872fad3450c6b0761396e&t=dropexapp-20&tracking_id=dropexapp-20"
-          width="728"
-          height="90"
-          scrolling="no"
-          style={{ border: "none" }}
-        />
+          <iframe
+            title="ad"
+            src="//rcm-na.amazon-adsystem.com/e/cm?o=1&p=26&l=ur1&category=amazonhomepage&f=ifr&linkID=62a369a1962a379ef1a4e5e61d152dd3&t=dropexapp-20&tracking_id=dropexapp-20"
+            width="468"
+            height="60"
+            scrolling="no"
+            style={{ border: "none" }}
+          />
         <div className="example">
           <input
             type="text"
@@ -84,17 +89,12 @@ class MainSearch extends Component {
             <FaSistrix />
           </button>
         </div>
-        {isFecthing ? null : this.filterHashtags()}
-        <div className="result">{this.filterImages()}</div>
-        <iframe
-          className="bottom-ad"
-          title="bottom-ad"
-          src="//rcm-na.amazon-adsystem.com/e/cm?o=1&p=288&l=ur1&category=gift_certificates&banner=1ZMTYQQCPDNJYWMYWR82&f=ifr&linkID=700324b3e7fcb3e33bc8b9f2e3693d85&t=dropexapp-20&tracking_id=dropexapp-20"
-          width="320"
-          height="50"
-          scrolling="no"
-          style={{ border: "none" }}
+        {isFecthing ? this.spinner() : this.filterHashtags()}
+        <div
+          className="advert"
+          id="amzn-assoc-ad-1af49800-edac-4f01-a470-1cc6c951472d"
         />
+        <div className="result">{isFecthing ? null : this.filterImages()}</div>
       </div>
     );
   }

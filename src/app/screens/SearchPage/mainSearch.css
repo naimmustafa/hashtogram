@@ -84,3 +84,9 @@
   bottom: 0;
   width: 100%;
 }
+
+.spinner {
+  margin-top: 20px;
+  width: 50vh;
+  height: 50vh;
+}
