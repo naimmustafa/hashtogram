@@ -5,29 +5,25 @@
   overflow: auto;
   align-items: center;
   flex-direction: column;
-  background: #c6ffdd; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to top,
-    #f7797d,
-    #fbd786,
-    #c6ffdd
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to top,
-    #f7797d,
-    #fbd786,
-    #c6ffdd
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background-size: cover;
+  background-image: url("./background.jpg");
 }
 
 .result {
   margin-top: 30px;
-  background-color: rgba(255, 150, 55, 0.5);
+  background-color: rgba(255, 255, 255, 0.7);
   width: 80%;
   align-items: center;
   text-align: center;
   flex-direction: row;
   border-radius: 10px;
+  font-family: "Thasadith", sans-serif;
+}
+
+.result p {
+    color: black;
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .example {
@@ -70,23 +66,48 @@
   display: table;
 }
 
+.copy {
+  background-color: #efbc75;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  padding: 10px 22px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 4px 2px;
+  opacity: 0.6;
+  transition: 0.3s;
+  display: inline-block;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.copy:hover {
+  opacity: 1;
+}
+
 .instagram-images {
-  width: 150px;
-  height: 150px;
   margin-top: 25px;
   margin-bottom: 25px;
   margin-left: 25px;
   margin-right: 25px;
 }
 
-.bottom-add {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-}
-
 .spinner {
   margin-top: 20px;
   width: 50vh;
   height: 50vh;
+}
+
+.page-header {
+  width: 100%;
+  margin-top: 0;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.landing-content {
+  font-family: "Thasadith", sans-serif;
+  font-weight: 200;
+  text-align: center;
 }

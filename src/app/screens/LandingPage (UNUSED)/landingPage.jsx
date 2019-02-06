@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import VideoBack from "./components/backgroundVideo.jsx";
 import { TiSocialInstagram } from "react-icons/ti";
+import { Helmet } from "react-helmet";
 
 import "./landing.css";
 
@@ -18,6 +19,21 @@ class Landing extends Component {
   render() {
     return (
       <div className="container">
+        <Helmet>
+          <meta
+            name="description"
+            content="Instagram related and best hashtag finder"
+          />
+          <meta
+            name="keywords"
+            content="instagram,content,createors,likes,followers,hashtag,besthashtag,getinstagramlikes,getinstagrafollowers,groworganically,organiclikes,organicfollowers"
+          />
+          <meta name="author" content="Naim Mustafa" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+          />
+        </Helmet>
         <VideoBack />
         <div className="content">
           <h1 className="landing-title">Find Better Hashtags for Instagram</h1>
@@ -27,7 +43,7 @@ class Landing extends Component {
             </button>
           </Link>
         </div>
-          <div className="advert" id="amzn-assoc-ad-1af49800-edac-4f01-a470-1cc6c951472d" />
+        <div id="amzn-assoc-ad-1af49800-edac-4f01-a470-1cc6c951472d" />
         <div className="content">
           <p className="landing-content">
             This is an search engine that filters best performing hashtags for

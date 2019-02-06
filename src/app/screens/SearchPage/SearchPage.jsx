@@ -5,6 +5,7 @@ import { bindActionCreators } from "redux";
 import * as actions from "../../utils/actions";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import _ from "lodash";
+import { Helmet } from "react-helmet";
 import "./mainSearch.css";
 
 import spinner from "./spinner.gif";
@@ -26,8 +27,8 @@ class MainSearch extends Component {
         return (
           <div key={index} className="result">
             <p>{item}</p>
-            <CopyToClipboard text={item.join().replace(/[ ]*,[ ]*|[ ]+/g, ' ')}>
-              <button>Copy Tags</button>
+            <CopyToClipboard text={item.join().replace(/[ ]*,[ ]*|[ ]+/g, " ")}>
+              <button className="copy">Copy Tags</button>
             </CopyToClipboard>
           </div>
         );
@@ -39,6 +40,7 @@ class MainSearch extends Component {
 
   filterImages() {
     const { data } = this.props;
+    const width = window.innerWidth;
     const re = new RegExp(
       "(http(s?):)([/_=?|.|\\w||\\s|-])*\\640x640([/_=?|.|\\w||\\s|-])*\\.(?:jpg|gif|png)([/_=?|.|\\w||\\s|-])*\\.(?:com)",
       "g"
@@ -48,7 +50,22 @@ class MainSearch extends Component {
       const unique = [...new Set(links)];
       return unique.map((image, index) => (
         <a href={image} key={index} target={image}>
-          <img className="instagram-images" src={image} alt="" />
+          <img
+            className="instagram-images"
+            style={
+              width < 600
+                ? {
+                    width: 50,
+                    height: 50,
+                    marginLeft: 5,
+                    marginRight: 5,
+                    marginBottom: 5
+                  }
+                : { width: 150, height: 150 }
+            }
+            src={image}
+            alt=""
+          />
         </a>
       ));
     }
@@ -63,14 +80,27 @@ class MainSearch extends Component {
     const { actions, word, isFecthing } = this.props;
     return (
       <div className="search-bar-container">
-        <iframe
-          title="ad"
-          src="//rcm-na.amazon-adsystem.com/e/cm?o=1&p=26&l=ur1&category=amazonhomepage&f=ifr&linkID=62a369a1962a379ef1a4e5e61d152dd3&t=dropexapp-20&tracking_id=dropexapp-20"
-          width="468"
-          height="60"
-          scrolling="no"
-          style={{ border: "none" }}
-        />
+        <Helmet>
+          <meta
+            name="description"
+            content="Instagram related and best hashtag finder"
+          />
+          <meta
+            name="keywords"
+            content="instagram,content,createors,likes,followers,hashtag,besthashtag,getinstagramlikes,getinstagrafollowers,groworganically,organiclikes,organicfollowers"
+          />
+          <meta name="author" content="Naim Mustafa" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+          />
+        </Helmet>
+        <div className="page-header">
+          <h1 className="landing-content">Hashtogram</h1>
+          <p className="landing-content">
+            ( Find better hashtags for your Instagram )
+          </p>
+        </div>
         <div className="example">
           <input
             type="text"
@@ -90,10 +120,6 @@ class MainSearch extends Component {
           </button>
         </div>
         {isFecthing ? this.spinner() : this.filterHashtags()}
-        <div
-          className="advert"
-          id="amzn-assoc-ad-1af49800-edac-4f01-a470-1cc6c951472d"
-        />
         <div className="result">{isFecthing ? null : this.filterImages()}</div>
       </div>
     );
