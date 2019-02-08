@@ -6,11 +6,17 @@ import * as actions from "../../utils/actions";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import _ from "lodash";
 import { Helmet } from "react-helmet";
+import axios from "axios";
 import "./mainSearch.css";
 
 import spinner from "./spinner.gif";
 
 class MainSearch extends Component {
+  componentDidMount() {
+    const { actions } = this.props;
+    actions.getSearchData();
+  }
+
   filterHashtags() {
     const { data } = this.props;
     const re = new RegExp("(?:^|[ ])#([a-zA-Z0-9]+)", "g");
@@ -76,6 +82,33 @@ class MainSearch extends Component {
     return <img className="spinner" src={spinner} alt="loading..." />;
   }
 
+  handleSearch(tag) {
+    const { actions } = this.props;
+    actions.fetchData(tag);
+    let send = { hashtag: tag };
+    axios
+      .post(
+        "https://4mf0vxmyn1.execute-api.us-east-2.amazonaws.com/dev/test-api",
+        send
+      )
+      .catch(e => alert(e));
+  }
+
+  getSearchedTags() {
+    const { hashtagsData } = this.props;
+    const count = hashtagsData.reduce((tally, fruit) => {
+      tally[fruit] = (tally[fruit] || 0) + 1;
+      return tally;
+    }, {});
+    return Object.entries(count).map(([key, value]) =>
+      value >= 5 ? (
+        <li key={key}>
+          #{key}: {value}
+        </li>
+      ) : null
+    );
+  }
+
   render() {
     const { actions, word, isFecthing } = this.props;
     return (
@@ -101,6 +134,12 @@ class MainSearch extends Component {
             ( Find better hashtags for your Instagram )
           </p>
         </div>
+        <div className="hashtag-data">
+          <ul>
+            <li className="hashtag-data-title">Top Tags:</li>
+            {this.getSearchedTags()}
+          </ul>
+        </div>
         <div className="example">
           <input
             type="text"
@@ -112,7 +151,7 @@ class MainSearch extends Component {
             type="button"
             onClick={
               word.length > 0
-                ? () => actions.fetchData(word)
+                ? () => this.handleSearch(word)
                 : () => alert("type something")
             }
           >
@@ -130,7 +169,9 @@ const mapStateToProps = state => {
   return {
     data: state.data.data,
     word: state.data.word,
-    isFecthing: state.data.isFecthing
+    hashtag: state.data.tag,
+    isFecthing: state.data.isFecthing,
+    hashtagsData: state.hashtags.hashtagsData
   };
 };
 
