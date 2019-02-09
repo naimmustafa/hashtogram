@@ -217,6 +217,7 @@ class MainSearch extends Component {
 
   render() {
     const { actions, word, isFecthing } = this.props;
+    console.log(word)
     return (
       <div className="search-bar-container">
         <Helmet>

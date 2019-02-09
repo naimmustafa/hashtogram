@@ -36,8 +36,9 @@ export const fetchData = hastag => {
 
 export const searchWord = word => {
   const searchText = word.replace(/\s/g,'');
+  const searchTag = searchText.replace(/#/g, '')
   return {
     type: "SEARCH_WORD",
-    payload: searchText
+    payload: searchTag
   };
 };
