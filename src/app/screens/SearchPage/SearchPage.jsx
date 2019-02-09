@@ -239,18 +239,18 @@ class MainSearch extends Component {
           <p className="landing-content">
             ( Find better hashtags for your Instagram )
           </p>
-        </div>
-        <div className="hashtag-data">
-          <ul>
-            <li className="hashtag-data-title">Top Tags:</li>
-            {this.getSearchedTags()}
-          </ul>
-        </div>
-        <div className="update-info">
-          <p>
-            <b>Update:</b> There are two types of hashtag sets,{" "}
-            <b>Popular & Most Used</b>
-          </p>
+          <div className="hashtag-data">
+            <ul>
+              <li className="hashtag-data-title">Top Tags:</li>
+              {this.getSearchedTags()}
+            </ul>
+          </div>
+          <div className="update-info">
+            <p>
+              <b>Update:</b> There are two types of hashtag sets,{" "}
+              <b>Popular & Most Used</b>
+            </p>
+          </div>
         </div>
         <div className="example">
           <input
