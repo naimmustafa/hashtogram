@@ -27,16 +27,51 @@ class MainSearch extends Component {
 
   async searchAll() {
     const { data, actions } = this.props;
-    const re = new RegExp("(?:^|[ ])#([a-zA-Z0-9]+)", "g");
-    const match = data.match(re);
+    const timeStampes = timeStamp(data);
+    const hashtagSets = hashtagArray(data);
+    const likesNum = likeCount(data);
+    const hashFilter = new RegExp("(?:^|[ ])#([a-zA-Z0-9]+)", "g");
+    const int = new RegExp("\\d+", "g");
+    const hashtags =
+      hashtagSets === null
+        ? []
+        : hashtagSets.map(item => item.match(hashFilter));
+    const postTime =
+      timeStampes === null ? [] : timeStampes.map(item => item.match(int));
+    const likes =
+      likesNum === null ? [] : likesNum.map(item => item.match(int));
+    // redux edits
+
+    const result =
+      likesNum === undefined || likesNum === null
+        ? {}
+        : Object.assign(
+            ...postTime.map((k, i) => ({
+              [i]: {
+                likes: likes[i][0],
+                time: postTime[i][0],
+                hashtag: hashtags[i]
+              }
+            }))
+          );
+    const filtered =
+      likesNum === undefined || likesNum === null
+        ? {}
+        : Object.assign(
+            ...Object.entries(result).map(([k, v]) =>
+              v.likes <= 25 || v.hashtag === null ? {} : { [k]: v }
+            )
+          );
+    const hede = Object.entries(filtered).map(([k, v]) => v.hashtag);
+    const merged = [].concat.apply([], hede);
     const dups =
-      match === null ? null : match.filter((v, i, a) => a.indexOf(v) < i);
+      merged === null ? null : merged.filter((v, i, a) => a.indexOf(v) < i);
     const unique = [...new Set(dups)];
-    const sorted = _.chunk(unique, 20).map(item => {
+    const sorted = _.chunk(unique, 30).map(item => {
       return item;
     });
     console.log(sorted);
-    actions.fetchDatas(sorted[0])
+    actions.fetchDatas(sorted[0]);
   }
 
   filterHashtags() {
@@ -112,8 +147,6 @@ class MainSearch extends Component {
     const sorted = _.chunk(unique, 30).map(item => {
       return item;
     });
-
-    console.log(sorted);
 
     return sorted.map((item, index) => {
       if (data.length > 0) {
@@ -209,13 +242,13 @@ class MainSearch extends Component {
   handleSearch(tag) {
     const { actions } = this.props;
     actions.fetchData(tag);
-    let send = { hashtag: tag };
-    axios
-      .post(
-        "https://4mf0vxmyn1.execute-api.us-east-2.amazonaws.com/dev/test-api",
-        send
-      )
-      .catch(e => alert(e));
+    // let send = { hashtag: tag };
+    // axios
+    //   .post(
+    //     "https://4mf0vxmyn1.execute-api.us-east-2.amazonaws.com/dev/test-api",
+    //     send
+    //   )
+    //   .catch(e => alert(e));
   }
 
   getSearchedTags() {
@@ -239,17 +272,25 @@ class MainSearch extends Component {
     const re6 = "(\\d+)"; // Integer Number 1
     let p = new RegExp(re1 + re2 + re3 + re4 + re5 + re6, ["g"]);
     const string = pagesAll.map(item => item.data.match(p));
-    console.log(competeTags)
     const competation = string
-      ? string.map(item => item[0].replace(`"edge_hashtag_to_media":{"count":`, ""))
+      ? string.map(item =>
+          item[0].replace(`"edge_hashtag_to_media":{"count":`, "")
+        )
       : 0;
-    console.log(competation)
-    console.log(competation.filter(item => Number(item) < 300000 && Number(item) > 5000))
+    let result = Object.assign(
+      ...competeTags.map((k, i) => ({ [k]: competation[i] }))
+    );
+    let newObj = Object.assign(
+      ...Object.entries(result).map(([k, v]) =>
+         v >= 350000  ? {} : { [k]: v }
+      )
+    );
+    console.log(newObj);
   }
 
   render() {
     const { actions, word, isFecthing, pagesAll } = this.props;
-    console.log('zlatan', pagesAll);
+    console.log("zlatan", pagesAll);
     return (
       <div className="search-bar-container">
         <Helmet>
