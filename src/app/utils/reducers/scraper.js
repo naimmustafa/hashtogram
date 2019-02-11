@@ -2,13 +2,16 @@ import {
   FETCH_DATA,
   SEARCH_WORD,
   LOAD_SPINNER,
-  KILL_SPINNER
+  KILL_SPINNER,
+  PAGES_ALL
 } from "../actions/types";
 
 const INIT_STATE = {
   data: "",
   word: "",
-  isFecthing: false
+  pagesAll: [],
+  isFecthing: false,
+  competeTags: []
 };
 
 export default (state = INIT_STATE, action) => {
@@ -21,6 +24,8 @@ export default (state = INIT_STATE, action) => {
       return { ...state, isFecthing: true };
     case KILL_SPINNER:
       return { ...state, isFecthing: false, data: "" };
+    case PAGES_ALL:
+      return { ...state, pagesAll: action.payload.data, competeTags: action.payload.tags };
     default:
       return state;
   }

@@ -25,6 +25,20 @@ class MainSearch extends Component {
     actions.getSearchData();
   }
 
+  async searchAll() {
+    const { data, actions } = this.props;
+    const re = new RegExp("(?:^|[ ])#([a-zA-Z0-9]+)", "g");
+    const match = data.match(re);
+    const dups =
+      match === null ? null : match.filter((v, i, a) => a.indexOf(v) < i);
+    const unique = [...new Set(dups)];
+    const sorted = _.chunk(unique, 20).map(item => {
+      return item;
+    });
+    console.log(sorted);
+    actions.fetchDatas(sorted[0])
+  }
+
   filterHashtags() {
     const { data } = this.props;
     const re = new RegExp("(?:^|[ ])#([a-zA-Z0-9]+)", "g");
@@ -215,9 +229,27 @@ class MainSearch extends Component {
     );
   }
 
+  findLessCompetative() {
+    const { pagesAll, competeTags } = this.props;
+    const re1 = '("edge_hashtag_to_media")'; // Double Quote String 1
+    const re2 = "(.)"; // Any Single Character 1
+    const re3 = "(.)"; // Any Single Character 2
+    const re4 = '(".*?")'; // Double Quote String 2
+    const re5 = "(.)"; // Any Single Character 3
+    const re6 = "(\\d+)"; // Integer Number 1
+    let p = new RegExp(re1 + re2 + re3 + re4 + re5 + re6, ["g"]);
+    const string = pagesAll.map(item => item.data.match(p));
+    console.log(competeTags)
+    const competation = string
+      ? string.map(item => item[0].replace(`"edge_hashtag_to_media":{"count":`, ""))
+      : 0;
+    console.log(competation)
+    console.log(competation.filter(item => Number(item) < 300000 && Number(item) > 5000))
+  }
+
   render() {
-    const { actions, word, isFecthing } = this.props;
-    console.log(word)
+    const { actions, word, isFecthing, pagesAll } = this.props;
+    console.log('zlatan', pagesAll);
     return (
       <div className="search-bar-container">
         <Helmet>
@@ -236,6 +268,12 @@ class MainSearch extends Component {
           />
         </Helmet>
         <div className="page-header">
+          <button type="button" onClick={() => this.searchAll()}>
+            try me
+          </button>
+          <button type="button" onClick={() => this.findLessCompetative()}>
+            filter
+          </button>
           <h1 className="landing-content">Hashtogram</h1>
           <p className="landing-content">
             ( Find better hashtags for your Instagram )
@@ -285,7 +323,9 @@ const mapStateToProps = state => {
     data: state.data.data,
     word: state.data.word,
     hashtag: state.data.tag,
+    pagesAll: state.data.pagesAll,
     isFecthing: state.data.isFecthing,
+    competeTags: state.data.competeTags,
     hashtagsData: state.hashtags.hashtagsData
   };
 };
