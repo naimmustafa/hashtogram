@@ -20,6 +20,11 @@ import {
 import spinner from "./spinner.gif";
 
 class MainSearch extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { tags: {}, count: 0, customtags: [] };
+  }
+
   componentDidMount() {
     const { actions } = this.props;
     actions.getSearchData();
@@ -281,15 +286,48 @@ class MainSearch extends Component {
       ...competeTags.map((k, i) => ({ [k]: competation[i] }))
     );
     let newObj = Object.assign(
-      ...Object.entries(result).map(([k, v]) =>
-         v >= 350000  ? {} : { [k]: v }
-      )
+      ...Object.entries(result).map(([k, v]) => (v >= 350000 ? {} : { [v]: k }))
     );
-    console.log(newObj);
+    return this.setState({ tags: newObj });
+  }
+
+  renderLessCompetative() {
+    let custarr = [];
+    Object.entries(this.state.tags).map(([key, value]) => custarr.push(value));
+    console.log("cust arr", custarr);
+    const sorted = _.chunk(custarr, 30).map(item => {
+      return item;
+    });
+    return sorted.map((item, index) =>
+      custarr.length > 0 ? (
+        <div key={index} className="result">
+          <h3>Best</h3>
+          <p>{item}</p>
+          <button
+            className="copy"
+            onClick={() =>
+              this.setState({ customtags: [...this.state.customtags, sorted] })
+            }
+          >
+            Add to Builder
+          </button>
+        </div>
+      ) : null
+    );
+  }
+
+  renderCustomTags() {
+    this.state.customtags.map(item => (
+      <div className="result" key={item}>
+        <h3>Best for Competative</h3>
+        <p>{item}</p>
+      </div>
+    ));
   }
 
   render() {
     const { actions, word, isFecthing, pagesAll } = this.props;
+    console.log("helele", this.state.customtags);
     console.log("zlatan", pagesAll);
     return (
       <div className="search-bar-container">
@@ -350,6 +388,8 @@ class MainSearch extends Component {
             <FaSistrix />
           </button>
         </div>
+        {this.renderCustomTags()}
+        {this.renderLessCompetative()}
         {isFecthing ? null : this.competativeLevel()}
         {isFecthing ? null : this.filterHashtags2()}
         {isFecthing ? this.spinner() : this.filterHashtags()}

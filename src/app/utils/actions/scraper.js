@@ -50,7 +50,7 @@ export const searchWord = word => {
 };
 
 export const fetchDatas = arr => {
-  const index = arr.indexOf('ig');
+  const index = arr.indexOf(' #ig');
   arr.splice(index, 1)
   const unique = [...new Set(arr)];
   console.log('hayri', unique)
