@@ -11,18 +11,14 @@ import "./mainSearch.css";
 
 // helpers
 
-import {
-  hashtagArray,
-  timeStamp,
-  likeCount
-} from "../../utils/scrapers/hashtagArray";
+import { sortData, commonSorted } from "../../utils/scrapers/sorting";
 
 import spinner from "./spinner.gif";
 
 class MainSearch extends Component {
   constructor(props) {
     super(props);
-    this.state = { tags: {}, count: 0, customtags: [] };
+    this.state = { tags: {}, count: 0, time: 20 };
   }
 
   componentDidMount() {
@@ -32,63 +28,14 @@ class MainSearch extends Component {
 
   async searchAll() {
     const { data, actions } = this.props;
-    const timeStampes = timeStamp(data);
-    const hashtagSets = hashtagArray(data);
-    const likesNum = likeCount(data);
-    const hashFilter = new RegExp("(?:^|[ ])#([a-zA-Z0-9]+)", "g");
-    const int = new RegExp("\\d+", "g");
-    const hashtags =
-      hashtagSets === null
-        ? []
-        : hashtagSets.map(item => item.match(hashFilter));
-    const postTime =
-      timeStampes === null ? [] : timeStampes.map(item => item.match(int));
-    const likes =
-      likesNum === null ? [] : likesNum.map(item => item.match(int));
-    // redux edits
-
-    const result =
-      likesNum === undefined || likesNum === null
-        ? {}
-        : Object.assign(
-            ...postTime.map((k, i) => ({
-              [i]: {
-                likes: likes[i][0],
-                time: postTime[i][0],
-                hashtag: hashtags[i]
-              }
-            }))
-          );
-    const filtered =
-      likesNum === undefined || likesNum === null
-        ? {}
-        : Object.assign(
-            ...Object.entries(result).map(([k, v]) =>
-              v.likes <= 25 || v.hashtag === null ? {} : { [k]: v }
-            )
-          );
-    const hede = Object.entries(filtered).map(([k, v]) => v.hashtag);
-    const merged = [].concat.apply([], hede);
-    const dups =
-      merged === null ? null : merged.filter((v, i, a) => a.indexOf(v) < i);
-    const unique = [...new Set(dups)];
-    const sorted = _.chunk(unique, 30).map(item => {
-      return item;
-    });
+    const sorted = sortData(data);
     console.log(sorted);
-    actions.fetchDatas(sorted[0]);
+    actions.fetchDatas(sorted[this.state.count]);
   }
 
   filterHashtags() {
     const { data } = this.props;
-    const re = new RegExp("(?:^|[ ])#([a-zA-Z0-9]+)", "g");
-    const match = data.match(re);
-    const dups =
-      match === null ? null : match.filter((v, i, a) => a.indexOf(v) < i);
-    const unique = [...new Set(dups)];
-    const sorted = _.chunk(unique, 30).map(item => {
-      return item;
-    });
+    const sorted = commonSorted(data);
     // redux edits
     return sorted.map((item, index) => {
       if (data.length > 0 && item.length === 30) {
@@ -109,50 +56,7 @@ class MainSearch extends Component {
 
   filterHashtags2() {
     const { data } = this.props;
-    const timeStampes = timeStamp(data);
-    const hashtagSets = hashtagArray(data);
-    const likesNum = likeCount(data);
-    const hashFilter = new RegExp("(?:^|[ ])#([a-zA-Z0-9]+)", "g");
-    const int = new RegExp("\\d+", "g");
-    const hashtags =
-      hashtagSets === null
-        ? []
-        : hashtagSets.map(item => item.match(hashFilter));
-    const postTime =
-      timeStampes === null ? [] : timeStampes.map(item => item.match(int));
-    const likes =
-      likesNum === null ? [] : likesNum.map(item => item.match(int));
-    // redux edits
-
-    const result =
-      likesNum === undefined || likesNum === null
-        ? {}
-        : Object.assign(
-            ...postTime.map((k, i) => ({
-              [i]: {
-                likes: likes[i][0],
-                time: postTime[i][0],
-                hashtag: hashtags[i]
-              }
-            }))
-          );
-    const filtered =
-      likesNum === undefined || likesNum === null
-        ? {}
-        : Object.assign(
-            ...Object.entries(result).map(([k, v]) =>
-              v.likes <= 25 || v.hashtag === null ? {} : { [k]: v }
-            )
-          );
-    const hede = Object.entries(filtered).map(([k, v]) => v.hashtag);
-    const merged = [].concat.apply([], hede);
-    const dups =
-      merged === null ? null : merged.filter((v, i, a) => a.indexOf(v) < i);
-    const unique = [...new Set(dups)];
-    const sorted = _.chunk(unique, 30).map(item => {
-      return item;
-    });
-
+    const sorted = sortData(data);
     return sorted.map((item, index) => {
       if (data.length > 0) {
         return (
@@ -291,6 +195,11 @@ class MainSearch extends Component {
     return this.setState({ tags: newObj });
   }
 
+  async vudu() {
+    this.setState({ count: this.state.count + 1 })
+    this.searchAll()
+  }
+
   renderLessCompetative() {
     let custarr = [];
     Object.entries(this.state.tags).map(([key, value]) => custarr.push(value));
@@ -303,26 +212,12 @@ class MainSearch extends Component {
         <div key={index} className="result">
           <h3>Best</h3>
           <p>{item}</p>
-          <button
-            className="copy"
-            onClick={() =>
-              this.setState({ customtags: [...this.state.customtags, sorted] })
-            }
-          >
+          <button className="copy" onClick={() => this.vudu()}>
             Add to Builder
           </button>
         </div>
       ) : null
     );
-  }
-
-  renderCustomTags() {
-    this.state.customtags.map(item => (
-      <div className="result" key={item}>
-        <h3>Best for Competative</h3>
-        <p>{item}</p>
-      </div>
-    ));
   }
 
   render() {
@@ -388,7 +283,6 @@ class MainSearch extends Component {
             <FaSistrix />
           </button>
         </div>
-        {this.renderCustomTags()}
         {this.renderLessCompetative()}
         {isFecthing ? null : this.competativeLevel()}
         {isFecthing ? null : this.filterHashtags2()}
