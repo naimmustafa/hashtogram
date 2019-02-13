@@ -192,6 +192,7 @@ class MainSearch extends Component {
     let newObj = Object.assign(
       ...Object.entries(result).map(([k, v]) => (v >= 350000 ? {} : { [v]: k }))
     );
+    // add spread operator to update instead of overwrite tags: {...this.state.tags, newObj}
     return this.setState({ tags: newObj });
   }
 
