@@ -202,6 +202,7 @@ class MainSearch extends Component {
   }
 
   renderLessCompetative() {
+    // Object.entries(this.state.tags).map(([key, value]) => value); returns an array
     let custarr = [];
     Object.entries(this.state.tags).map(([key, value]) => custarr.push(value));
     console.log("cust arr", custarr);
