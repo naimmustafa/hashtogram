@@ -20,7 +20,7 @@ export const fetchData = hastag => {
   return dispatch => {
     dispatch(loginSpinner());
     axios
-      .get(`https://www.instagram.com/explore/tags/${hastag}/`)
+      .get(`${'https://cors-anywhere.herokuapp.com/'}https://www.instagram.com/explore/tags/${hastag}/`)
       .then(response => {
         dispatch({
           type: FETCH_DATA,
