@@ -60,7 +60,7 @@ export const fetchDatas = arr => {
     var p = new RegExp(re1 + re2, ["g"]);
     const promises = unique.map(item =>
       axios.get(
-        `https://www.instagram.com/explore/tags/${item.replace(p, "")}/`
+        `${'https://cors-anywhere.herokuapp.com/'}https://www.instagram.com/explore/tags/${item.replace(p, "")}/`
       )
     );
     Promise.all(promises).then(values =>
