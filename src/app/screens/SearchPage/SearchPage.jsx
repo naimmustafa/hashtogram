@@ -39,7 +39,7 @@ class MainSearch extends Component {
   handleSearch(tag) {
     const { actions } = this.props;
     actions.fetchData(tag);
-    // actions.sendSearchData(tag);
+    actions.sendSearchData(tag);
   }
 
   searchAll() {
@@ -210,12 +210,6 @@ class MainSearch extends Component {
         </Helmet>
 
         <div className="page-header">
-          <button type="button" onClick={() => this.searchAll()}>
-            try me
-          </button>
-          <button type="button" onClick={() => this.findLessCompetative()}>
-            filter
-          </button>
           <h1 className="landing-content">Hashtogram</h1>
           <p className="landing-content">
             ( Find better hashtags for your Instagram )
