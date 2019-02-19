@@ -1,20 +1,28 @@
 import React, { Component } from "react";
-import { FaSistrix } from "react-icons/fa";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as actions from "../../utils/actions";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import _ from "lodash";
-import { Helmet } from "react-helmet";
-import axios from "axios";
 import "./mainSearch.css";
 
+// npm imports
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import { Helmet } from "react-helmet";
+import _ from "lodash";
+
 // helpers
+import {
+  sortData,
+  commonSorted,
+  leveler,
+  findLessCompetativeSort
+} from "../../utils/scrapers/sorting";
+import { competativeScraper } from "../../utils/scrapers/hashtagArray";
 
-import { sortData, commonSorted } from "../../utils/scrapers/sorting";
-
+// assest
 import spinner from "./spinner.gif";
+import { FaSistrix } from "react-icons/fa";
 
+// Component
 class MainSearch extends Component {
   constructor(props) {
     super(props);
@@ -26,17 +34,44 @@ class MainSearch extends Component {
     actions.getSearchData();
   }
 
-  async searchAll() {
-    const { data, actions } = this.props;
-    const sorted = sortData(data);
-    console.log(sorted);
-    actions.fetchDatas(sorted[this.state.count]);
+// functions
+
+  handleSearch(tag) {
+    const { actions } = this.props;
+    actions.fetchData(tag);
+    // actions.sendSearchData(tag);
   }
 
-  filterHashtags() {
+  getSearchedTags() {
+    const { hashtagsData } = this.props;
+    const count = hashtagsData.reduce((hashtag, amount) => {
+      hashtag[amount] = (hashtag[amount] || 0) + 1;
+      return hashtag;
+    }, {});
+    return Object.entries(count).map(([key, value]) =>
+      value >= 5 ? <li key={key}>#{key}</li> : null
+    );
+  }
+
+  searchAll() {
+    const { data, actions } = this.props;
+    const sorted = sortData(data);
+    if (data.length > 0) {
+      actions.fetchDatas(sorted[this.state.count]);
+    }
+    return null;
+  }
+
+  findLessCompetative() {
+    const { pagesAll, competeTags } = this.props;
+    const newObj = findLessCompetativeSort(pagesAll, competeTags);
+    return this.setState({ tags: { ...this.state.tags, ...newObj } });
+  }
+
+// renders
+  mostCommonHashtags() {
     const { data } = this.props;
     const sorted = commonSorted(data);
-    // redux edits
     return sorted.map((item, index) => {
       if (data.length > 0 && item.length === 30) {
         return (
@@ -54,7 +89,7 @@ class MainSearch extends Component {
     });
   }
 
-  filterHashtags2() {
+  mostPopularHashtags() {
     const { data } = this.props;
     const sorted = sortData(data);
     return sorted.map((item, index) => {
@@ -108,30 +143,9 @@ class MainSearch extends Component {
     return null;
   }
 
-  leveler(postNumber) {
-    if (postNumber <= 50000) {
-      return "Not Competative";
-    } else if (postNumber <= 150000 && postNumber > 50000) {
-      return "Slightly Competative";
-    } else if (postNumber <= 1500000 && postNumber > 150000) {
-      return "Competative";
-    } else if (postNumber <= 5000000 && postNumber > 1500000) {
-      return "Very Competative";
-    } else {
-      return "Extremely Competative";
-    }
-  }
-
   competativeLevel() {
     const { data } = this.props;
-    const re1 = '("edge_hashtag_to_media")'; // Double Quote String 1
-    const re2 = "(.)"; // Any Single Character 1
-    const re3 = "(.)"; // Any Single Character 2
-    const re4 = '(".*?")'; // Double Quote String 2
-    const re5 = "(.)"; // Any Single Character 3
-    const re6 = "(\\d+)"; // Integer Number 1
-    let p = new RegExp(re1 + re2 + re3 + re4 + re5 + re6, ["i"]);
-    const string = data.match(p);
+    const string = competativeScraper(data);
     const competation = string
       ? string[0].replace(`"edge_hashtag_to_media":{"count":`, "")
       : 0;
@@ -139,72 +153,13 @@ class MainSearch extends Component {
     return competation === 0 ? null : (
       <div className="result">
         <h3>Posts: {competation}</h3>
-        <h4>{this.leveler(Number(competation))}</h4>
+        <h4>{leveler(Number(competation))}</h4>
       </div>
     );
   }
 
-  spinner() {
-    return <img className="spinner" src={spinner} alt="loading..." />;
-  }
-
-  handleSearch(tag) {
-    const { actions } = this.props;
-    actions.fetchData(tag);
-    // let send = { hashtag: tag };
-    // axios
-    //   .post(
-    //     "https://4mf0vxmyn1.execute-api.us-east-2.amazonaws.com/dev/test-api",
-    //     send
-    //   )
-    //   .catch(e => alert(e));
-  }
-
-  getSearchedTags() {
-    const { hashtagsData } = this.props;
-    const count = hashtagsData.reduce((hashtag, amount) => {
-      hashtag[amount] = (hashtag[amount] || 0) + 1;
-      return hashtag;
-    }, {});
-    return Object.entries(count).map(([key, value]) =>
-      value >= 5 ? <li key={key}>#{key}</li> : null
-    );
-  }
-
-  findLessCompetative() {
-    const { pagesAll, competeTags } = this.props;
-    const re1 = '("edge_hashtag_to_media")'; // Double Quote String 1
-    const re2 = "(.)"; // Any Single Character 1
-    const re3 = "(.)"; // Any Single Character 2
-    const re4 = '(".*?")'; // Double Quote String 2
-    const re5 = "(.)"; // Any Single Character 3
-    const re6 = "(\\d+)"; // Integer Number 1
-    let p = new RegExp(re1 + re2 + re3 + re4 + re5 + re6, ["g"]);
-    const string = pagesAll.map(item => item.data.match(p));
-    const competation = string
-      ? string.map(item =>
-          item[0].replace(`"edge_hashtag_to_media":{"count":`, "")
-        )
-      : 0;
-    let result = Object.assign(
-      ...competeTags.map((k, i) => ({ [k]: competation[i] }))
-    );
-    let newObj = Object.assign(
-      ...Object.entries(result).map(([k, v]) => (v >= 350000 ? {} : { [v]: k }))
-    );
-    // add spread operator to update instead of overwrite tags: {...this.state.tags, ...newObj}
-    return this.setState({ tags: newObj });
-  }
-
-  async vudu() {
-    this.setState({ count: this.state.count + 1 })
-    this.searchAll()
-  }
-
   renderLessCompetative() {
-    // Object.entries(this.state.tags).map(([key, value]) => value); returns an array
-    let custarr = [];
-    Object.entries(this.state.tags).map(([key, value]) => custarr.push(value));
+    let custarr = Object.entries(this.state.tags).map(([key, value]) => value);
     console.log("cust arr", custarr);
     const sorted = _.chunk(custarr, 30).map(item => {
       return item;
@@ -220,6 +175,10 @@ class MainSearch extends Component {
         </div>
       ) : null
     );
+  }
+
+  spinner() {
+    return <img className="spinner" src={spinner} alt="loading..." />;
   }
 
   render() {
@@ -287,8 +246,8 @@ class MainSearch extends Component {
         </div>
         {this.renderLessCompetative()}
         {isFecthing ? null : this.competativeLevel()}
-        {isFecthing ? null : this.filterHashtags2()}
-        {isFecthing ? this.spinner() : this.filterHashtags()}
+        {isFecthing ? null : this.mostPopularHashtags()}
+        {isFecthing ? this.spinner() : this.mostCommonHashtags()}
         <div className="result">{isFecthing ? null : this.filterImages()}</div>
       </div>
     );

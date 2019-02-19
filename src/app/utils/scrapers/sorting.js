@@ -2,8 +2,9 @@ import _ from "lodash";
 import {
   hashtagArray,
   timeStamp,
-  likeCount
-} from "../../utils/scrapers/hashtagArray";
+  likeCount,
+  findLessCompetativeScraper
+} from "./hashtagArray";
 
 export const sortData = data => {
   const timeStampes = timeStamp(data);
@@ -60,3 +61,32 @@ export const commonSorted = data => {
   });
   return sorted;
 };
+
+export const leveler = postNumber => {
+    if (postNumber <= 50000) {
+      return "Not Competative";
+    } else if (postNumber <= 150000 && postNumber > 50000) {
+      return "Slightly Competative";
+    } else if (postNumber <= 1500000 && postNumber > 150000) {
+      return "Competative";
+    } else if (postNumber <= 5000000 && postNumber > 1500000) {
+      return "Very Competative";
+    } else {
+      return "Extremely Competative";
+    }
+  }
+
+  export const findLessCompetativeSort = (pagesAll, tags) => {
+    const string = findLessCompetativeScraper(pagesAll)
+    const competation = string
+      ? string.map(item =>
+          item[0].replace(`"edge_hashtag_to_media":{"count":`, "")
+        )
+      : 0;
+    let result = Object.assign(
+      ...tags.map((k, i) => ({ [k]: competation[i] }))
+    );
+    return Object.assign(
+      ...Object.entries(result).map(([k, v]) => (v >= 350000 ? {} : { [v]: k }))
+    );
+  }
