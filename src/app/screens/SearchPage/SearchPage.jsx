@@ -26,7 +26,7 @@ import { FaSistrix } from "react-icons/fa";
 class MainSearch extends Component {
   constructor(props) {
     super(props);
-    this.state = { tags: {}, count: 0, time: 20 };
+    this.state = { tags: {}, count: 0, time: 20, showMostSearched: false };
   }
 
   componentDidMount() {
@@ -34,23 +34,12 @@ class MainSearch extends Component {
     actions.getSearchData();
   }
 
-// functions
+  // functions
 
   handleSearch(tag) {
     const { actions } = this.props;
     actions.fetchData(tag);
     // actions.sendSearchData(tag);
-  }
-
-  getSearchedTags() {
-    const { hashtagsData } = this.props;
-    const count = hashtagsData.reduce((hashtag, amount) => {
-      hashtag[amount] = (hashtag[amount] || 0) + 1;
-      return hashtag;
-    }, {});
-    return Object.entries(count).map(([key, value]) =>
-      value >= 5 ? <li key={key}>#{key}</li> : null
-    );
   }
 
   searchAll() {
@@ -68,7 +57,39 @@ class MainSearch extends Component {
     return this.setState({ tags: { ...this.state.tags, ...newObj } });
   }
 
-// renders
+  // renders
+
+  getSearchedTags() {
+    const { hashtagsData } = this.props;
+    const count = hashtagsData.reduce((hashtag, amount) => {
+      hashtag[amount] = (hashtag[amount] || 0) + 1;
+      return hashtag;
+    }, {});
+    return Object.entries(count).map(([key, value]) =>
+      value >= 5 ? (
+        <li key={key} onClick={() => this.handleSearch(key)}>
+          #{key}
+          <span>{value}</span>
+        </li>
+      ) : null
+    );
+  }
+
+  competativeLevel() {
+    const { data } = this.props;
+    const string = competativeScraper(data);
+    const competation = string
+      ? string[0].replace(`"edge_hashtag_to_media":{"count":`, "")
+      : 0;
+
+    return competation === 0 ? null : (
+      <div className="result">
+        <h3>Posts: {competation}</h3>
+        <h4>{leveler(Number(competation))}</h4>
+      </div>
+    );
+  }
+
   mostCommonHashtags() {
     const { data } = this.props;
     const sorted = commonSorted(data);
@@ -143,21 +164,6 @@ class MainSearch extends Component {
     return null;
   }
 
-  competativeLevel() {
-    const { data } = this.props;
-    const string = competativeScraper(data);
-    const competation = string
-      ? string[0].replace(`"edge_hashtag_to_media":{"count":`, "")
-      : 0;
-
-    return competation === 0 ? null : (
-      <div className="result">
-        <h3>Posts: {competation}</h3>
-        <h4>{leveler(Number(competation))}</h4>
-      </div>
-    );
-  }
-
   renderLessCompetative() {
     let custarr = Object.entries(this.state.tags).map(([key, value]) => value);
     console.log("cust arr", custarr);
@@ -202,6 +208,7 @@ class MainSearch extends Component {
             content="width=device-width, initial-scale=1.0"
           />
         </Helmet>
+
         <div className="page-header">
           <button type="button" onClick={() => this.searchAll()}>
             try me
@@ -213,20 +220,24 @@ class MainSearch extends Component {
           <p className="landing-content">
             ( Find better hashtags for your Instagram )
           </p>
+
           <div className="hashtag-data">
-            <ul>
-              <li className="hashtag-data-title">Top Tags:</li>
-              {this.getSearchedTags()}
-            </ul>
-          </div>
-          <div className="update-info">
-            <p>
-              <b>Update:</b> There are two types of hashtag sets,{" "}
-              <b>Popular & Most Used</b>
-            </p>
+            <button
+              className="hashtag-data-title"
+              onClick={() =>
+                this.setState({
+                  showMostSearched: !this.state.showMostSearched
+                })
+              }
+            >
+              Most Searched Tags
+            </button>
+            {this.state.showMostSearched === true ? (
+              <ul>{this.getSearchedTags()}</ul>
+            ) : null}
           </div>
         </div>
-        <div className="example">
+        <div className="content-container">
           <input
             type="text"
             placeholder="Search.."
