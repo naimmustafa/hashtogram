@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import * as actions from "../../utils/actions";
+import * as actions from "app/utils/actions";
 import "./mainSearch.css";
+
+import { Container } from 'styled-components/sc-search'
 
 // npm imports
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -15,8 +17,8 @@ import {
   commonSorted,
   leveler,
   findLessCompetativeSort
-} from "../../utils/scrapers/sorting";
-import { competativeScraper } from "../../utils/scrapers/hashtagArray";
+} from "app/utils/scrapers/sorting";
+import { competativeScraper } from "app/utils/scrapers/hashtagArray";
 
 // assest
 import spinner from "./spinner.gif";
@@ -192,7 +194,7 @@ class MainSearch extends Component {
     console.log("helele", this.state.customtags);
     console.log("zlatan", pagesAll);
     return (
-      <div className="search-bar-container">
+      <Container active>
         <Helmet>
           <meta
             name="description"
@@ -260,7 +262,7 @@ class MainSearch extends Component {
         {isFecthing ? null : this.mostPopularHashtags()}
         {isFecthing ? this.spinner() : this.mostCommonHashtags()}
         <div className="result">{isFecthing ? null : this.filterImages()}</div>
-      </div>
+      </Container>
     );
   }
 }

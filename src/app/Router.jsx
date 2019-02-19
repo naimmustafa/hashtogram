@@ -7,9 +7,7 @@ class MainRouter extends Component {
   render() {
     return (
       <Router>
-        <div>
           <Route path="/" component={MainSearch} />
-        </div>
       </Router>
     );
   }
