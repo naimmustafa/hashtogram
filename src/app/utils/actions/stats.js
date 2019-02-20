@@ -17,3 +17,15 @@ export const getSearchData = () => {
       .catch(e => alert(e));
   };
 };
+
+export const sendSearchData = tag => {
+  let send = { hashtag: tag };
+  return dispatch => {
+    axios
+      .post(
+        "https://4mf0vxmyn1.execute-api.us-east-2.amazonaws.com/dev/test-api",
+        send
+      )
+      .catch(e => alert(e));
+  };
+};

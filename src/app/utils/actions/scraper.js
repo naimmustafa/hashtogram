@@ -50,10 +50,10 @@ export const searchWord = word => {
 };
 
 export const fetchDatas = arr => {
-  const index = arr.indexOf(' #ig');
-  arr.splice(index, 1)
+  const index = arr.indexOf(" #ig");
+  arr.splice(index, 1);
   const unique = [...new Set(arr)];
-  console.log('hayri', unique)
+  console.log("hayri", unique);
   return dispatch => {
     const re1 = "(\\s+)"; // White Space 1
     const re2 = "(#)"; // Any Single Character 1

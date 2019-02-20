@@ -1,24 +1,40 @@
 import React, { Component } from "react";
-import { FaSistrix } from "react-icons/fa";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as actions from "../../utils/actions";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import _ from "lodash";
-import { Helmet } from "react-helmet";
-import axios from "axios";
 import "./mainSearch.css";
 
+// npm imports
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import { Helmet } from "react-helmet";
+import _ from "lodash";
+
 // helpers
+import {
+  sortData,
+  commonSorted,
+  leveler,
+  findLessCompetativeSort
+} from "../../utils/scrapers/sorting";
+import { competativeScraper } from "../../utils/scrapers/hashtagArray";
 
-import { sortData, commonSorted } from "../../utils/scrapers/sorting";
-
+// assest
 import spinner from "./spinner.gif";
+import { FaSistrix } from "react-icons/fa";
+import { FiPlusCircle, FiMinusCircle } from "react-icons/fi";
 
+// Component
 class MainSearch extends Component {
   constructor(props) {
     super(props);
-    this.state = { tags: {}, count: 0, time: 20 };
+    this.state = {
+      tags: {},
+      count: 0,
+      time: 20,
+      showMostSearched: false,
+      builder: [],
+      activeTab: "popular"
+    };
   }
 
   componentDidMount() {
@@ -26,26 +42,87 @@ class MainSearch extends Component {
     actions.getSearchData();
   }
 
-  async searchAll() {
-    const { data, actions } = this.props;
-    const sorted = sortData(data);
-    console.log(sorted);
-    actions.fetchDatas(sorted[this.state.count]);
+  // functions
+
+  handleSearch(tag) {
+    const { actions } = this.props;
+    actions.fetchData(tag);
+    // actions.sendSearchData(tag);
   }
 
-  filterHashtags() {
+  searchAll() {
+    const { data, actions } = this.props;
+    const sorted = sortData(data);
+    if (data.length > 0) {
+      actions.fetchDatas(sorted[this.state.count]);
+    }
+    return null;
+  }
+
+  // renders
+
+  getSearchedTags() {
+    const { hashtagsData } = this.props;
+    const count = hashtagsData.reduce((hashtag, amount) => {
+      hashtag[amount] = (hashtag[amount] || 0) + 1;
+      return hashtag;
+    }, {});
+    return Object.entries(count).map(([key, value]) =>
+      value >= 5 ? (
+        <li key={key} onClick={() => this.handleSearch(key)}>
+          #{key}
+          <span>{value}</span>
+        </li>
+      ) : null
+    );
+  }
+
+  competativeLevel() {
     const { data } = this.props;
+    const string = competativeScraper(data);
+    const competation = string
+      ? string[0].replace(`"edge_hashtag_to_media":{"count":`, "")
+      : 0;
+
+    return competation === 0 ? null : (
+      <div className="result">
+        <h3>Posts: {competation}</h3>
+        <h4>{leveler(Number(competation))}</h4>
+      </div>
+    );
+  }
+
+  mostCommonHashtags() {
+    const { data } = this.props;
+    const { builder } = this.state;
     const sorted = commonSorted(data);
-    // redux edits
     return sorted.map((item, index) => {
       if (data.length > 0 && item.length === 30) {
         return (
           <div key={index} className="result">
             <h3>Most Used</h3>
-            <p>{item}</p>
-            <CopyToClipboard text={item.join().replace(/[ ]*,[ ]*|[ ]+/g, " ")}>
-              <button className="copy">Copy Tags</button>
-            </CopyToClipboard>
+            {item.map((tag, index) =>
+              tag !== "undefined" ? (
+                <button
+                  className="builder-buttons"
+                  key={index}
+                  onClick={() =>
+                    sorted.includes(tag) || builder.length === 30
+                      ? null
+                      : this.setState({ builder: [...builder, tag] })
+                  }
+                >
+                  {tag} <FiPlusCircle />
+                </button>
+              ) : null
+            )}
+            <div>
+              <CopyToClipboard
+                text={item.join().replace(/[ ]*,[ ]*|[ ]+/g, " ")}
+              >
+                <button className="copy">Copy Tags</button>
+              </CopyToClipboard>
+            </div>
           </div>
         );
       } else {
@@ -54,18 +131,38 @@ class MainSearch extends Component {
     });
   }
 
-  filterHashtags2() {
+  mostPopularHashtags() {
     const { data } = this.props;
+    const { builder } = this.state;
     const sorted = sortData(data);
+    console.log(sorted);
     return sorted.map((item, index) => {
       if (data.length > 0) {
         return (
           <div key={index} className="result">
             <h3>Popular</h3>
-            <p>{item}</p>
-            <CopyToClipboard text={item.join().replace(/[ ]*,[ ]*|[ ]+/g, " ")}>
-              <button className="copy">Copy Tags</button>
-            </CopyToClipboard>
+            {item.map((tag, index) =>
+              tag !== "undefined" ? (
+                <button
+                  className="builder-buttons"
+                  key={index}
+                  onClick={() =>
+                    sorted.includes(tag) || builder.length === 30
+                      ? null
+                      : this.setState({ builder: [...builder, tag] })
+                  }
+                >
+                  {tag} <FiPlusCircle />
+                </button>
+              ) : null
+            )}
+            <div>
+              <CopyToClipboard
+                text={item.join().replace(/[ ]*,[ ]*|[ ]+/g, " ")}
+              >
+                <button className="copy">Copy Tags</button>
+              </CopyToClipboard>
+            </div>
           </div>
         );
       } else {
@@ -108,103 +205,12 @@ class MainSearch extends Component {
     return null;
   }
 
-  leveler(postNumber) {
-    if (postNumber <= 50000) {
-      return "Not Competative";
-    } else if (postNumber <= 150000 && postNumber > 50000) {
-      return "Slightly Competative";
-    } else if (postNumber <= 1500000 && postNumber > 150000) {
-      return "Competative";
-    } else if (postNumber <= 5000000 && postNumber > 1500000) {
-      return "Very Competative";
-    } else {
-      return "Extremely Competative";
-    }
-  }
-
-  competativeLevel() {
-    const { data } = this.props;
-    const re1 = '("edge_hashtag_to_media")'; // Double Quote String 1
-    const re2 = "(.)"; // Any Single Character 1
-    const re3 = "(.)"; // Any Single Character 2
-    const re4 = '(".*?")'; // Double Quote String 2
-    const re5 = "(.)"; // Any Single Character 3
-    const re6 = "(\\d+)"; // Integer Number 1
-    let p = new RegExp(re1 + re2 + re3 + re4 + re5 + re6, ["i"]);
-    const string = data.match(p);
-    const competation = string
-      ? string[0].replace(`"edge_hashtag_to_media":{"count":`, "")
-      : 0;
-
-    return competation === 0 ? null : (
-      <div className="result">
-        <h3>Posts: {competation}</h3>
-        <h4>{this.leveler(Number(competation))}</h4>
-      </div>
-    );
-  }
-
-  spinner() {
-    return <img className="spinner" src={spinner} alt="loading..." />;
-  }
-
-  handleSearch(tag) {
-    const { actions } = this.props;
-    actions.fetchData(tag);
-    // let send = { hashtag: tag };
-    // axios
-    //   .post(
-    //     "https://4mf0vxmyn1.execute-api.us-east-2.amazonaws.com/dev/test-api",
-    //     send
-    //   )
-    //   .catch(e => alert(e));
-  }
-
-  getSearchedTags() {
-    const { hashtagsData } = this.props;
-    const count = hashtagsData.reduce((hashtag, amount) => {
-      hashtag[amount] = (hashtag[amount] || 0) + 1;
-      return hashtag;
-    }, {});
-    return Object.entries(count).map(([key, value]) =>
-      value >= 5 ? <li key={key}>#{key}</li> : null
-    );
-  }
-
-  findLessCompetative() {
-    const { pagesAll, competeTags } = this.props;
-    const re1 = '("edge_hashtag_to_media")'; // Double Quote String 1
-    const re2 = "(.)"; // Any Single Character 1
-    const re3 = "(.)"; // Any Single Character 2
-    const re4 = '(".*?")'; // Double Quote String 2
-    const re5 = "(.)"; // Any Single Character 3
-    const re6 = "(\\d+)"; // Integer Number 1
-    let p = new RegExp(re1 + re2 + re3 + re4 + re5 + re6, ["g"]);
-    const string = pagesAll.map(item => item.data.match(p));
-    const competation = string
-      ? string.map(item =>
-          item[0].replace(`"edge_hashtag_to_media":{"count":`, "")
-        )
-      : 0;
-    let result = Object.assign(
-      ...competeTags.map((k, i) => ({ [k]: competation[i] }))
-    );
-    let newObj = Object.assign(
-      ...Object.entries(result).map(([k, v]) => (v >= 350000 ? {} : { [v]: k }))
-    );
-    // add spread operator to update instead of overwrite tags: {...this.state.tags, ...newObj}
-    return this.setState({ tags: newObj });
-  }
-
-  async vudu() {
-    this.setState({ count: this.state.count + 1 })
-    this.searchAll()
-  }
-
   renderLessCompetative() {
-    // Object.entries(this.state.tags).map(([key, value]) => value); returns an array
-    let custarr = [];
-    Object.entries(this.state.tags).map(([key, value]) => custarr.push(value));
+    const { pagesAll, competeTags } = this.props;
+    const { builder } = this.state;
+    const newObj =
+      pagesAll.length > 0 ? findLessCompetativeSort(pagesAll, competeTags) : {};
+    let custarr = Object.entries(newObj).map(([key, value]) => value);
     console.log("cust arr", custarr);
     const sorted = _.chunk(custarr, 30).map(item => {
       return item;
@@ -213,17 +219,76 @@ class MainSearch extends Component {
       custarr.length > 0 ? (
         <div key={index} className="result">
           <h3>Best</h3>
-          <p>{item}</p>
-          <button className="copy" onClick={() => this.vudu()}>
-            Add to Builder
-          </button>
+          {item.map((tag, index) =>
+            tag !== "undefined" ? (
+              <button
+                className="builder-buttons"
+                key={index}
+                onClick={() =>
+                  builder.includes(tag) || builder.length === 30
+                    ? null
+                    : this.setState({ builder: [...builder, tag] })
+                }
+              >
+                {tag} <FiPlusCircle />
+              </button>
+            ) : null
+          )}
         </div>
       ) : null
     );
   }
 
+  renderBuilder() {
+    const { builder } = this.state;
+    const tags = builder;
+    return builder.length > 0 ? (
+      <div className="result">
+        <h3>Builder {builder.length}</h3>
+        {builder.map((tag, index) =>
+          tag !== "undefined" ? (
+            <button
+              className="builder-buttons"
+              key={index}
+              onClick={() => {
+                let index = tags.indexOf(tag);
+                tags.splice(index, 1);
+                this.setState({ builder: tags });
+              }}
+            >
+              {tag} <FiMinusCircle />
+            </button>
+          ) : null
+        )}
+        <div>
+          <CopyToClipboard
+            text={builder.join().replace(/[ ]*,[ ]*|[ ]+/g, " ")}
+          >
+            <button className="copy">Copy Tags</button>
+          </CopyToClipboard>
+          <button
+            className="copy"
+            onClick={() => this.setState({ builder: [] })}
+          >
+            Clear All
+          </button>
+        </div>
+      </div>
+    ) : (
+      <div className="result">
+        <h3>Builder</h3>
+        <p>Added tags will be displayed here</p>
+      </div>
+    );
+  }
+
+  spinner() {
+    return <img className="spinner" src={spinner} alt="loading..." />;
+  }
+
   render() {
-    const { actions, word, isFecthing, pagesAll } = this.props;
+    const { actions, word, isFecthing, pagesAll, data } = this.props;
+    const { activeTab, builder } = this.state;
     console.log("helele", this.state.customtags);
     console.log("zlatan", pagesAll);
     return (
@@ -243,31 +308,33 @@ class MainSearch extends Component {
             content="width=device-width, initial-scale=1.0"
           />
         </Helmet>
+
         <div className="page-header">
           <button type="button" onClick={() => this.searchAll()}>
             try me
-          </button>
-          <button type="button" onClick={() => this.findLessCompetative()}>
-            filter
           </button>
           <h1 className="landing-content">Hashtogram</h1>
           <p className="landing-content">
             ( Find better hashtags for your Instagram )
           </p>
+
           <div className="hashtag-data">
-            <ul>
-              <li className="hashtag-data-title">Top Tags:</li>
-              {this.getSearchedTags()}
-            </ul>
-          </div>
-          <div className="update-info">
-            <p>
-              <b>Update:</b> There are two types of hashtag sets,{" "}
-              <b>Popular & Most Used</b>
-            </p>
+            <button
+              className="hashtag-data-title"
+              onClick={() =>
+                this.setState({
+                  showMostSearched: !this.state.showMostSearched
+                })
+              }
+            >
+              Most Searched Tags
+            </button>
+            {this.state.showMostSearched === true ? (
+              <ul>{this.getSearchedTags()}</ul>
+            ) : null}
           </div>
         </div>
-        <div className="example">
+        <div className="content-container">
           <input
             type="text"
             placeholder="Search.."
@@ -285,11 +352,44 @@ class MainSearch extends Component {
             <FaSistrix />
           </button>
         </div>
-        {this.renderLessCompetative()}
-        {isFecthing ? null : this.competativeLevel()}
-        {isFecthing ? null : this.filterHashtags2()}
-        {isFecthing ? this.spinner() : this.filterHashtags()}
-        <div className="result">{isFecthing ? null : this.filterImages()}</div>
+        {data.length > 0 ? <div className="tab">
+          <button
+            className="tablinks"
+            style={activeTab === 'popular' ? {backgroundColor: '#ddd'} : {}}
+            onClick={() => this.setState({ activeTab: "popular" })}
+          >
+            Popular Tags
+          </button>
+          <button
+            className="tablinks"
+            style={activeTab === 'mostused' ? {backgroundColor: '#ddd'} : {}}
+            onClick={() => this.setState({ activeTab: "mostused" })}
+          >
+            Most Used Tags
+          </button>
+          <button
+            className="tablinks"
+            style={activeTab === 'builder' ? {backgroundColor: '#ddd'} : {}}
+            onClick={() => this.setState({ activeTab: "builder" })}
+          >
+            Builder {builder.length > 0 ? builder.length : null}
+          </button>
+        </div> : null}
+        {activeTab === "popular" ? this.renderLessCompetative() : null}
+        {activeTab === "builder" ? this.renderBuilder() : null}
+        {isFecthing ? this.spinner() : null}
+        {!isFecthing && activeTab !== "builder"
+          ? this.competativeLevel()
+          : null}
+        {!isFecthing && activeTab === "popular"
+          ? this.mostPopularHashtags()
+          : null}
+        {!isFecthing && activeTab === "mostused"
+          ? this.mostCommonHashtags()
+          : null}
+        <div className="result">
+          {!isFecthing && activeTab !== "builder" ? this.filterImages() : null}
+        </div>
       </div>
     );
   }
