@@ -32,7 +32,8 @@ class MainSearch extends Component {
       count: 0,
       time: 20,
       showMostSearched: false,
-      builder: []
+      builder: [],
+      activeTab: "popular"
     };
   }
 
@@ -93,16 +94,35 @@ class MainSearch extends Component {
 
   mostCommonHashtags() {
     const { data } = this.props;
+    const { builder } = this.state;
     const sorted = commonSorted(data);
     return sorted.map((item, index) => {
       if (data.length > 0 && item.length === 30) {
         return (
           <div key={index} className="result">
             <h3>Most Used</h3>
-            <p>{item}</p>
-            <CopyToClipboard text={item.join().replace(/[ ]*,[ ]*|[ ]+/g, " ")}>
-              <button className="copy">Copy Tags</button>
-            </CopyToClipboard>
+            {item.map((tag, index) =>
+              tag !== "undefined" ? (
+                <button
+                  className="builder-buttons"
+                  key={index}
+                  onClick={() =>
+                    sorted.includes(tag) || builder.length === 30
+                      ? null
+                      : this.setState({ builder: [...builder, tag] })
+                  }
+                >
+                  {tag} <FiPlusCircle />
+                </button>
+              ) : null
+            )}
+            <div>
+              <CopyToClipboard
+                text={item.join().replace(/[ ]*,[ ]*|[ ]+/g, " ")}
+              >
+                <button className="copy">Copy Tags</button>
+              </CopyToClipboard>
+            </div>
           </div>
         );
       } else {
@@ -113,6 +133,7 @@ class MainSearch extends Component {
 
   mostPopularHashtags() {
     const { data } = this.props;
+    const { builder } = this.state;
     const sorted = sortData(data);
     console.log(sorted);
     return sorted.map((item, index) => {
@@ -120,10 +141,28 @@ class MainSearch extends Component {
         return (
           <div key={index} className="result">
             <h3>Popular</h3>
-            <p>{item}</p>
-            <CopyToClipboard text={item.join().replace(/[ ]*,[ ]*|[ ]+/g, " ")}>
-              <button className="copy">Copy Tags</button>
-            </CopyToClipboard>
+            {item.map((tag, index) =>
+              tag !== "undefined" ? (
+                <button
+                  className="builder-buttons"
+                  key={index}
+                  onClick={() =>
+                    sorted.includes(tag) || builder.length === 30
+                      ? null
+                      : this.setState({ builder: [...builder, tag] })
+                  }
+                >
+                  {tag} <FiPlusCircle />
+                </button>
+              ) : null
+            )}
+            <div>
+              <CopyToClipboard
+                text={item.join().replace(/[ ]*,[ ]*|[ ]+/g, " ")}
+              >
+                <button className="copy">Copy Tags</button>
+              </CopyToClipboard>
+            </div>
           </div>
         );
       } else {
@@ -186,7 +225,7 @@ class MainSearch extends Component {
                 className="builder-buttons"
                 key={index}
                 onClick={() =>
-                  builder.includes(tag)
+                  builder.includes(tag) || builder.length === 30
                     ? null
                     : this.setState({ builder: [...builder, tag] })
                 }
@@ -202,12 +241,21 @@ class MainSearch extends Component {
 
   renderBuilder() {
     const { builder } = this.state;
+    const tags = builder;
     return builder.length > 0 ? (
       <div className="result">
         <h3>Builder {builder.length}</h3>
         {builder.map((tag, index) =>
           tag !== "undefined" ? (
-            <button className="builder-buttons" key={index}>
+            <button
+              className="builder-buttons"
+              key={index}
+              onClick={() => {
+                let index = tags.indexOf(tag);
+                tags.splice(index, 1);
+                this.setState({ builder: tags });
+              }}
+            >
               {tag} <FiMinusCircle />
             </button>
           ) : null
@@ -218,9 +266,20 @@ class MainSearch extends Component {
           >
             <button className="copy">Copy Tags</button>
           </CopyToClipboard>
+          <button
+            className="copy"
+            onClick={() => this.setState({ builder: [] })}
+          >
+            Clear All
+          </button>
         </div>
       </div>
-    ) : null;
+    ) : (
+      <div className="result">
+        <h3>Builder</h3>
+        <p>Added tags will be displayed here</p>
+      </div>
+    );
   }
 
   spinner() {
@@ -228,7 +287,8 @@ class MainSearch extends Component {
   }
 
   render() {
-    const { actions, word, isFecthing, pagesAll } = this.props;
+    const { actions, word, isFecthing, pagesAll, data } = this.props;
+    const { activeTab, builder } = this.state;
     console.log("helele", this.state.customtags);
     console.log("zlatan", pagesAll);
     return (
@@ -274,7 +334,6 @@ class MainSearch extends Component {
             ) : null}
           </div>
         </div>
-        {this.renderBuilder()}
         <div className="content-container">
           <input
             type="text"
@@ -293,11 +352,44 @@ class MainSearch extends Component {
             <FaSistrix />
           </button>
         </div>
-        {this.renderLessCompetative()}
-        {isFecthing ? null : this.competativeLevel()}
-        {isFecthing ? null : this.mostPopularHashtags()}
-        {isFecthing ? this.spinner() : this.mostCommonHashtags()}
-        <div className="result">{isFecthing ? null : this.filterImages()}</div>
+        {data.length > 0 ? <div className="tab">
+          <button
+            className="tablinks"
+            style={activeTab === 'popular' ? {backgroundColor: '#ddd'} : {}}
+            onClick={() => this.setState({ activeTab: "popular" })}
+          >
+            Popular Tags
+          </button>
+          <button
+            className="tablinks"
+            style={activeTab === 'mostused' ? {backgroundColor: '#ddd'} : {}}
+            onClick={() => this.setState({ activeTab: "mostused" })}
+          >
+            Most Used Tags
+          </button>
+          <button
+            className="tablinks"
+            style={activeTab === 'builder' ? {backgroundColor: '#ddd'} : {}}
+            onClick={() => this.setState({ activeTab: "builder" })}
+          >
+            Builder {builder.length > 0 ? builder.length : null}
+          </button>
+        </div> : null}
+        {activeTab === "popular" ? this.renderLessCompetative() : null}
+        {activeTab === "builder" ? this.renderBuilder() : null}
+        {isFecthing ? this.spinner() : null}
+        {!isFecthing && activeTab !== "builder"
+          ? this.competativeLevel()
+          : null}
+        {!isFecthing && activeTab === "popular"
+          ? this.mostPopularHashtags()
+          : null}
+        {!isFecthing && activeTab === "mostused"
+          ? this.mostCommonHashtags()
+          : null}
+        <div className="result">
+          {!isFecthing && activeTab !== "builder" ? this.filterImages() : null}
+        </div>
       </div>
     );
   }

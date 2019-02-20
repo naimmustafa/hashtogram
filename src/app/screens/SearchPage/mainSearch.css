@@ -141,7 +141,7 @@
 .hashtag-data-title {
   background-color: rgba(255, 255, 255, 0.1);
   color: black;
-  border: 2px solid #4CAF50;
+  border: 2px solid #4caf50;
   outline: none;
 }
 
@@ -178,4 +178,29 @@
   margin: 5px;
   border-radius: 36px;
   font-size: 17px;
+}
+
+.tab {
+  margin-top: 20px;
+  width: 100vw;
+  background-color: white;
+  text-align: center;
+}
+
+.tablinks {
+  width: 33.33333vw;
+  background-color: inherit;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-family: "Thasadith", sans-serif;
+  font-weight: bold;
+}
+
+.tablinks button:active {
+  background-color: #fff;
+}
+
+.tab button:hover {
+  background-color: #ddd;
 }
