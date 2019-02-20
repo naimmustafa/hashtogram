@@ -21,12 +21,19 @@ import { competativeScraper } from "../../utils/scrapers/hashtagArray";
 // assest
 import spinner from "./spinner.gif";
 import { FaSistrix } from "react-icons/fa";
+import { FiPlusCircle, FiMinusCircle } from "react-icons/fi";
 
 // Component
 class MainSearch extends Component {
   constructor(props) {
     super(props);
-    this.state = { tags: {}, count: 0, time: 20, showMostSearched: false };
+    this.state = {
+      tags: {},
+      count: 0,
+      time: 20,
+      showMostSearched: false,
+      builder: []
+    };
   }
 
   componentDidMount() {
@@ -49,12 +56,6 @@ class MainSearch extends Component {
       actions.fetchDatas(sorted[this.state.count]);
     }
     return null;
-  }
-
-  findLessCompetative() {
-    const { pagesAll, competeTags } = this.props;
-    const newObj = findLessCompetativeSort(pagesAll, competeTags);
-    return this.setState({ tags: { ...this.state.tags, ...newObj } });
   }
 
   // renders
@@ -113,6 +114,7 @@ class MainSearch extends Component {
   mostPopularHashtags() {
     const { data } = this.props;
     const sorted = sortData(data);
+    console.log(sorted);
     return sorted.map((item, index) => {
       if (data.length > 0) {
         return (
@@ -165,7 +167,11 @@ class MainSearch extends Component {
   }
 
   renderLessCompetative() {
-    let custarr = Object.entries(this.state.tags).map(([key, value]) => value);
+    const { pagesAll, competeTags } = this.props;
+    const { builder } = this.state;
+    const newObj =
+      pagesAll.length > 0 ? findLessCompetativeSort(pagesAll, competeTags) : {};
+    let custarr = Object.entries(newObj).map(([key, value]) => value);
     console.log("cust arr", custarr);
     const sorted = _.chunk(custarr, 30).map(item => {
       return item;
@@ -174,13 +180,47 @@ class MainSearch extends Component {
       custarr.length > 0 ? (
         <div key={index} className="result">
           <h3>Best</h3>
-          <p>{item}</p>
-          <button className="copy" onClick={() => this.vudu()}>
-            Add to Builder
-          </button>
+          {item.map((tag, index) =>
+            tag !== "undefined" ? (
+              <button
+                className="builder-buttons"
+                key={index}
+                onClick={() =>
+                  builder.includes(tag)
+                    ? null
+                    : this.setState({ builder: [...builder, tag] })
+                }
+              >
+                {tag} <FiPlusCircle />
+              </button>
+            ) : null
+          )}
         </div>
       ) : null
     );
+  }
+
+  renderBuilder() {
+    const { builder } = this.state;
+    return builder.length > 0 ? (
+      <div className="result">
+        <h3>Builder {builder.length}</h3>
+        {builder.map((tag, index) =>
+          tag !== "undefined" ? (
+            <button className="builder-buttons" key={index}>
+              {tag} <FiMinusCircle />
+            </button>
+          ) : null
+        )}
+        <div>
+          <CopyToClipboard
+            text={builder.join().replace(/[ ]*,[ ]*|[ ]+/g, " ")}
+          >
+            <button className="copy">Copy Tags</button>
+          </CopyToClipboard>
+        </div>
+      </div>
+    ) : null;
   }
 
   spinner() {
@@ -213,9 +253,6 @@ class MainSearch extends Component {
           <button type="button" onClick={() => this.searchAll()}>
             try me
           </button>
-          <button type="button" onClick={() => this.findLessCompetative()}>
-            filter
-          </button>
           <h1 className="landing-content">Hashtogram</h1>
           <p className="landing-content">
             ( Find better hashtags for your Instagram )
@@ -237,6 +274,7 @@ class MainSearch extends Component {
             ) : null}
           </div>
         </div>
+        {this.renderBuilder()}
         <div className="content-container">
           <input
             type="text"
