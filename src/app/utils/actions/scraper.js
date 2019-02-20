@@ -1,4 +1,10 @@
-import { FETCH_DATA, SEARCH_WORD, LOAD_SPINNER, KILL_SPINNER } from "./types";
+import {
+  FETCH_DATA,
+  SEARCH_WORD,
+  LOAD_SPINNER,
+  KILL_SPINNER,
+  PAGES_ALL
+} from "./types";
 
 import axios from "axios";
 
@@ -35,10 +41,34 @@ export const fetchData = hastag => {
 };
 
 export const searchWord = word => {
-  const searchText = word.replace(/\s/g,'');
-  const searchTag = searchText.replace(/#/g, '')
+  const searchText = word.replace(/\s/g, "");
+  const searchTag = searchText.replace(/#/g, "");
   return {
     type: "SEARCH_WORD",
     payload: searchTag
+  };
+};
+
+export const fetchDatas = arr => {
+  const index = arr.indexOf(" #ig");
+  arr.splice(index, 1);
+  const unique = [...new Set(arr)];
+  console.log("hayri", unique);
+  return dispatch => {
+    const re1 = "(\\s+)"; // White Space 1
+    const re2 = "(#)"; // Any Single Character 1
+    var p = new RegExp(re1 + re2, ["g"]);
+    const promises = unique.map(item =>
+      axios.get(
+        "https://cors-anywhere.herokuapp.com/" +
+          `https://www.instagram.com/explore/tags/${item.replace(p, "")}/`
+      )
+    );
+    Promise.all(promises).then(values =>
+      dispatch({
+        type: PAGES_ALL,
+        payload: { data: values, tags: arr }
+      })
+    );
   };
 };

@@ -68,3 +68,25 @@ export const likeCount = data => {
   const p = new RegExp(re1 + re2 + re3 + re4 + re5 + re6 + re7, ["g"]);
   return data.match(p);
 };
+
+export const competativeScraper = data => {
+  const re1 = '("edge_hashtag_to_media")'; // Double Quote String 1
+  const re2 = "(.)"; // Any Single Character 1
+  const re3 = "(.)"; // Any Single Character 2
+  const re4 = '(".*?")'; // Double Quote String 2
+  const re5 = "(.)"; // Any Single Character 3
+  const re6 = "(\\d+)"; // Integer Number 1
+  let p = new RegExp(re1 + re2 + re3 + re4 + re5 + re6, ["i"]);
+  return data.match(p);
+}
+
+export const findLessCompetativeScraper = data => {
+  const re1 = '("edge_hashtag_to_media")'; // Double Quote String 1
+  const re2 = "(.)"; // Any Single Character 1
+  const re3 = "(.)"; // Any Single Character 2
+  const re4 = '(".*?")'; // Double Quote String 2
+  const re5 = "(.)"; // Any Single Character 3
+  const re6 = "(\\d+)"; // Integer Number 1
+  let p = new RegExp(re1 + re2 + re3 + re4 + re5 + re6, ["g"]);
+  return data.map(item => item.data.match(p));
+}
