@@ -106,8 +106,9 @@ class MainSearch extends Component {
                 <button
                   className="builder-buttons"
                   key={index}
+                  style={builder.includes(tag) ? {backgroundColor: '#ddd'} : {}}
                   onClick={() =>
-                    sorted.includes(tag) || builder.length === 30
+                    builder.includes(tag) || builder.length === 30
                       ? null
                       : this.setState({ builder: [...builder, tag] })
                   }
@@ -146,8 +147,9 @@ class MainSearch extends Component {
                 <button
                   className="builder-buttons"
                   key={index}
+                  style={builder.includes(tag) ? {backgroundColor: '#ddd'} : {}}
                   onClick={() =>
-                    sorted.includes(tag) || builder.length === 30
+                    builder.includes(tag) || builder.length === 30
                       ? null
                       : this.setState({ builder: [...builder, tag] })
                   }
