@@ -81,7 +81,13 @@ class MainSearch extends Component {
     }, {});
     return Object.entries(count).map(([key, value]) =>
       value >= 5 ? (
-        <li key={key} onClick={() => this.handleSearch(key)}>
+        <li
+          key={key}
+          onClick={() => {
+            this.handleSearch(key);
+            this.setState({ showMostSearched: false });
+          }}
+        >
           #{key}
           <span>{value}</span>
         </li>
