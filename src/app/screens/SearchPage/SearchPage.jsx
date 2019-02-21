@@ -119,7 +119,9 @@ class MainSearch extends Component {
                   className="builder-buttons"
                   key={index}
                   style={
-                    builder.includes(tag) ? { backgroundColor: "#ddd" } : {}
+                    builder.includes(tag)
+                      ? { backgroundColor: "rgba(72, 244, 66, 0.5)" }
+                      : {}
                   }
                   onClick={() => this.addRemoveTagstoBuilder(tag)}
                 >
