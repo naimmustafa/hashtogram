@@ -19,7 +19,7 @@ import {
 import { competativeScraper } from "../../utils/scrapers/hashtagArray";
 
 // assest
-import spinner from "./spinner.gif";
+import { ClipLoader } from "react-spinners";
 import { FaSistrix } from "react-icons/fa";
 import { FiPlusCircle, FiMinusCircle } from "react-icons/fi";
 
@@ -57,6 +57,18 @@ class MainSearch extends Component {
       actions.fetchDatas(sorted[this.state.count]);
     }
     return null;
+  }
+
+  addRemoveTagstoBuilder(tag) {
+    const { builder } = this.state;
+    const tags = builder;
+    if (builder.includes(tag) || builder.length === 30) {
+      let index = tags.indexOf(tag);
+      tags.splice(index, 1);
+      this.setState({ builder: tags });
+    } else {
+      this.setState({ builder: [...builder, tag] });
+    }
   }
 
   // renders
@@ -106,12 +118,10 @@ class MainSearch extends Component {
                 <button
                   className="builder-buttons"
                   key={index}
-                  style={builder.includes(tag) ? {backgroundColor: '#ddd'} : {}}
-                  onClick={() =>
-                    builder.includes(tag) || builder.length === 30
-                      ? null
-                      : this.setState({ builder: [...builder, tag] })
+                  style={
+                    builder.includes(tag) ? { backgroundColor: "#ddd" } : {}
                   }
+                  onClick={() => this.addRemoveTagstoBuilder(tag)}
                 >
                   {tag} <FiPlusCircle />
                 </button>
@@ -147,12 +157,12 @@ class MainSearch extends Component {
                 <button
                   className="builder-buttons"
                   key={index}
-                  style={builder.includes(tag) ? {backgroundColor: '#ddd'} : {}}
-                  onClick={() =>
-                    builder.includes(tag) || builder.length === 30
-                      ? null
-                      : this.setState({ builder: [...builder, tag] })
+                  style={
+                    builder.includes(tag)
+                      ? { backgroundColor: "rgba(72, 244, 66, 0.5)" }
+                      : {}
                   }
+                  onClick={() => this.addRemoveTagstoBuilder(tag)}
                 >
                   {tag} <FiPlusCircle />
                 </button>
@@ -285,7 +295,7 @@ class MainSearch extends Component {
   }
 
   spinner() {
-    return <img className="spinner" src={spinner} alt="loading..." />;
+    return <ClipLoader size={18} color={"white"} />;
   }
 
   render() {
@@ -348,35 +358,38 @@ class MainSearch extends Component {
                 : () => alert("type something")
             }
           >
-            <FaSistrix />
+            {isFecthing ? this.spinner() : <FaSistrix />}
           </button>
         </div>
-        {data.length > 0 ? <div className="tab">
-          <button
-            className="tablinks"
-            style={activeTab === 'popular' ? {backgroundColor: '#ddd'} : {}}
-            onClick={() => this.setState({ activeTab: "popular" })}
-          >
-            Popular Tags
-          </button>
-          <button
-            className="tablinks"
-            style={activeTab === 'mostused' ? {backgroundColor: '#ddd'} : {}}
-            onClick={() => this.setState({ activeTab: "mostused" })}
-          >
-            Most Used Tags
-          </button>
-          <button
-            className="tablinks"
-            style={activeTab === 'builder' ? {backgroundColor: '#ddd'} : {}}
-            onClick={() => this.setState({ activeTab: "builder" })}
-          >
-            Builder {builder.length > 0 ? builder.length : null}
-          </button>
-        </div> : null}
+        {data.length > 0 ? (
+          <div className="tab">
+            <button
+              className="tablinks"
+              style={activeTab === "popular" ? { backgroundColor: "#ddd" } : {}}
+              onClick={() => this.setState({ activeTab: "popular" })}
+            >
+              Popular Tags
+            </button>
+            <button
+              className="tablinks"
+              style={
+                activeTab === "mostused" ? { backgroundColor: "#ddd" } : {}
+              }
+              onClick={() => this.setState({ activeTab: "mostused" })}
+            >
+              Most Used Tags
+            </button>
+            <button
+              className="tablinks"
+              style={activeTab === "builder" ? { backgroundColor: "#ddd" } : {}}
+              onClick={() => this.setState({ activeTab: "builder" })}
+            >
+              Builder {builder.length > 0 ? builder.length : null}
+            </button>
+          </div>
+        ) : null}
         {activeTab === "popular" ? this.renderLessCompetative() : null}
         {activeTab === "builder" ? this.renderBuilder() : null}
-        {isFecthing ? this.spinner() : null}
         {!isFecthing && activeTab !== "builder"
           ? this.competativeLevel()
           : null}

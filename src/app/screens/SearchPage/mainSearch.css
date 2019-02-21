@@ -95,9 +95,9 @@
 }
 
 .spinner {
-  margin-top: 20px;
-  width: 50vh;
-  height: 50vh;
+  display: block;
+  margin: 0 auto;
+  border-color: red;
 }
 
 .page-header {
