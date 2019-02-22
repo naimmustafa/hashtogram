@@ -10,6 +10,7 @@ import SearchedTags from "./Components/SearchedTags";
 import MostCommonHashtags from "./Components/MostCommonHashtags";
 import MostPopularHashtags from "./Components/MostPopularHashtags";
 import Photos from "./Components/Photos";
+import CompetitionLevel from "./Components/CompetitionLevel";
 // import MostCommonHashtags from "./Components/MostCommonHashtags"
 
 // npm imports
@@ -79,55 +80,6 @@ class MainSearch extends Component {
   }
 
   // renders
-
-  competativeLevel() {
-    const { data } = this.props;
-    const string = competativeScraper(data);
-    const competation = string
-      ? string[0].replace(`"edge_hashtag_to_media":{"count":`, "")
-      : 0;
-
-    return competation === 0 ? null : (
-      <div className="result">
-        <h3>Posts: {competation}</h3>
-        <h4>{leveler(Number(competation))}</h4>
-      </div>
-    );
-  }
-
-  filterImages() {
-    const { data } = this.props;
-    const width = window.innerWidth;
-    const re = new RegExp(
-      "(http(s?):)([/_=?|.|\\w||\\s|-])*\\640x640([/_=?|.|\\w||\\s|-])*\\.(?:jpg|gif|png)([/_=?|.|\\w||\\s|-])*\\.(?:com)",
-      "g"
-    );
-    if (data.length > 0) {
-      const links = data.match(re);
-      const unique = [...new Set(links)];
-      return unique.map((image, index) => (
-        <a href={image} key={index} target={image}>
-          <img
-            className="instagram-images"
-            style={
-              width < 600
-                ? {
-                    width: 50,
-                    height: 50,
-                    marginLeft: 5,
-                    marginRight: 5,
-                    marginBottom: 5
-                  }
-                : { width: 150, height: 150 }
-            }
-            src={image}
-            alt=""
-          />
-        </a>
-      ));
-    }
-    return null;
-  }
 
   renderLessCompetative() {
     const { pagesAll, competeTags } = this.props;
@@ -308,9 +260,11 @@ class MainSearch extends Component {
         ) : null}
         {activeTab === "popular" ? this.renderLessCompetative() : null}
         {activeTab === "builder" ? this.renderBuilder() : null}
-        {!isFecthing && activeTab !== "builder"
-          ? this.competativeLevel()
-          : null}
+        <CompetitionLevel
+          data={data}
+          isFecthing={isFecthing}
+          activeTab={activeTab}
+        />
         <MostPopularHashtags
           data={data}
           builder={builder}
