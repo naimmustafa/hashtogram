@@ -154,7 +154,6 @@ class MainSearch extends Component {
     const { data } = this.props;
     const { builder } = this.state;
     const sorted = sortData(data);
-    console.log(sorted);
     return sorted.map((item, index) => {
       if (data.length > 0) {
         return (
@@ -231,7 +230,6 @@ class MainSearch extends Component {
     const newObj =
       pagesAll.length > 0 ? findLessCompetativeSort(pagesAll, competeTags) : {};
     let custarr = Object.entries(newObj).map(([key, value]) => value);
-    console.log("cust arr", custarr);
     const sorted = _.chunk(custarr, 30).map(item => {
       return item;
     });
@@ -307,10 +305,8 @@ class MainSearch extends Component {
   }
 
   render() {
-    const { actions, word, isFecthing, pagesAll, data } = this.props;
+    const { actions, word, isFecthing, data, hashtagsData } = this.props;
     const { activeTab, builder } = this.state;
-    console.log("helele", this.state.customtags);
-    console.log("zlatan", pagesAll);
     return (
       <div className="search-bar-container">
         <Helmet>
@@ -347,7 +343,12 @@ class MainSearch extends Component {
               Most Searched Tags
             </button>
             {this.state.showMostSearched === true ? (
-              <ul>{this.getSearchedTags()}</ul>
+              <div>
+                <p>
+                  {hashtagsData.length} times users searched for hashtags
+                </p>
+                <ul>{this.getSearchedTags()}</ul>
+              </div>
             ) : null}
           </div>
         </div>
