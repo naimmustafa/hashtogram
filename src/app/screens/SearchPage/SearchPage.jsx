@@ -13,6 +13,7 @@ import Photos from "./Components/Photos";
 import CompetitionLevel from "./Components/CompetitionLevel";
 import Builder from "./Components/Builder";
 import Spinner from "./Components/Spinner";
+import TabBar from "./Components/TabBar";
 // import MostCommonHashtags from "./Components/MostCommonHashtags"
 
 // npm imports
@@ -142,33 +143,12 @@ class MainSearch extends Component {
             {isFecthing ? <Spinner /> : <FaSistrix />}
           </button>
         </div>
-        {data.length > 0 ? (
-          <div className="tab">
-            <button
-              className="tablinks"
-              style={activeTab === "popular" ? { backgroundColor: "#ddd" } : {}}
-              onClick={() => this.setState({ activeTab: "popular" })}
-            >
-              Popular Tags
-            </button>
-            <button
-              className="tablinks"
-              style={
-                activeTab === "mostused" ? { backgroundColor: "#ddd" } : {}
-              }
-              onClick={() => this.setState({ activeTab: "mostused" })}
-            >
-              Most Used Tags
-            </button>
-            <button
-              className="tablinks"
-              style={activeTab === "builder" ? { backgroundColor: "#ddd" } : {}}
-              onClick={() => this.setState({ activeTab: "builder" })}
-            >
-              Builder {builder.length > 0 ? builder.length : null}
-            </button>
-          </div>
-        ) : null}
+        <TabBar
+          data={data}
+          activeTab={activeTab}
+          builder={builder}
+          changeTab={type => this.setState({ activeTab: type })}
+        />
         <Builder
           builder={builder}
           activeTab={activeTab}
