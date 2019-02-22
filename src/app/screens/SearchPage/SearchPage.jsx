@@ -4,28 +4,22 @@ import { bindActionCreators } from "redux";
 import * as actions from "../../utils/actions";
 import "./mainSearch.css";
 
-// components
+import {
+  Builder,
+  CompetitionLevel,
+  MostCommonHashtags,
+  MostPopularHashtags,
+  Photos,
+  SearchedTags,
+  Spinner,
+  TabBar
+} from "./Components";
 
-import SearchedTags from "./Components/SearchedTags";
-import MostCommonHashtags from "./Components/MostCommonHashtags";
-import MostPopularHashtags from "./Components/MostPopularHashtags";
-import Photos from "./Components/Photos";
-import CompetitionLevel from "./Components/CompetitionLevel";
-import Builder from "./Components/Builder";
-import Spinner from "./Components/Spinner";
-import TabBar from "./Components/TabBar";
-// import MostCommonHashtags from "./Components/MostCommonHashtags"
-
-// npm imports
 import { Helmet } from "react-helmet";
-
-// helpers
-import { sortData } from "../../utils/scrapers/sorting";
-
-// assest
 import { FaSistrix } from "react-icons/fa";
 
-// Component
+import { sortData } from "../../utils/scrapers/sorting";
+
 class MainSearch extends Component {
   constructor(props) {
     super(props);
