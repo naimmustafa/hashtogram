@@ -182,13 +182,16 @@
 
 .tab {
   margin-top: 20px;
-  width: 100vw;
+  width: 100%;
   background-color: white;
   text-align: center;
+  border-radius: 100px;
 }
 
 .tablinks {
-  width: 33.33333vw;
+  width: 33.3%;
+  height: 30px;
+  border-radius: 100px;
   background-color: inherit;
   border: none;
   outline: none;

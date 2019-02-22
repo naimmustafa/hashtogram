@@ -8,6 +8,8 @@ import "./mainSearch.css";
 
 import SearchedTags from "./Components/SearchedTags";
 import MostCommonHashtags from "./Components/MostCommonHashtags";
+import MostPopularHashtags from "./Components/MostPopularHashtags";
+import Photos from "./Components/Photos";
 // import MostCommonHashtags from "./Components/MostCommonHashtags"
 
 // npm imports
@@ -91,46 +93,6 @@ class MainSearch extends Component {
         <h4>{leveler(Number(competation))}</h4>
       </div>
     );
-  }
-
-  mostPopularHashtags() {
-    const { data } = this.props;
-    const { builder } = this.state;
-    const sorted = sortData(data);
-    return sorted.map((item, index) => {
-      if (data.length > 0) {
-        return (
-          <div key={index} className="result">
-            <h3>Popular</h3>
-            {item.map((tag, index) =>
-              tag !== "undefined" ? (
-                <button
-                  className="builder-buttons"
-                  key={index}
-                  style={
-                    builder.includes(tag)
-                      ? { backgroundColor: "rgba(72, 244, 66, 0.5)" }
-                      : {}
-                  }
-                  onClick={() => this.addRemoveTagstoBuilder(tag)}
-                >
-                  {tag} <FiPlusCircle />
-                </button>
-              ) : null
-            )}
-            <div>
-              <CopyToClipboard
-                text={item.join().replace(/[ ]*,[ ]*|[ ]+/g, " ")}
-              >
-                <button className="copy">Copy Tags</button>
-              </CopyToClipboard>
-            </div>
-          </div>
-        );
-      } else {
-        return null;
-      }
-    });
   }
 
   filterImages() {
@@ -349,18 +311,22 @@ class MainSearch extends Component {
         {!isFecthing && activeTab !== "builder"
           ? this.competativeLevel()
           : null}
-        {!isFecthing && activeTab === "popular"
-          ? this.mostPopularHashtags()
-          : null}
+        <MostPopularHashtags
+          data={data}
+          builder={builder}
+          activeTab={activeTab}
+          isFecthing={isFecthing}
+          addRemoveTagstoBuilder={tag => this.addRemoveTagstoBuilder(tag)}
+        />
         <MostCommonHashtags
           data={data}
           builder={builder}
           activeTab={activeTab}
           isFecthing={isFecthing}
-          addRemoveTagstoBuilder={ tag => this.addRemoveTagstoBuilder(tag)}
+          addRemoveTagstoBuilder={tag => this.addRemoveTagstoBuilder(tag)}
         />
         <div className="result">
-          {!isFecthing && activeTab !== "builder" ? this.filterImages() : null}
+          <Photos data={data} isFecthing={isFecthing} activeTab={activeTab} />
         </div>
       </div>
     );
