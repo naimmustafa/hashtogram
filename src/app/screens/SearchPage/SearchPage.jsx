@@ -7,6 +7,7 @@ import "./mainSearch.css";
 // components
 
 import SearchedTags from "./Components/SearchedTags";
+import MostCommonHashtags from "./Components/MostCommonHashtags";
 // import MostCommonHashtags from "./Components/MostCommonHashtags"
 
 // npm imports
@@ -17,7 +18,6 @@ import _ from "lodash";
 // helpers
 import {
   sortData,
-  commonSorted,
   leveler,
   findLessCompetativeSort
 } from "../../utils/scrapers/sorting";
@@ -91,46 +91,6 @@ class MainSearch extends Component {
         <h4>{leveler(Number(competation))}</h4>
       </div>
     );
-  }
-
-  mostCommonHashtags() {
-    const { data } = this.props;
-    const { builder } = this.state;
-    const sorted = commonSorted(data);
-    return sorted.map((item, index) => {
-      if (data.length > 0 && item.length === 30) {
-        return (
-          <div key={index} className="result">
-            <h3>Most Used</h3>
-            {item.map((tag, index) =>
-              tag !== "undefined" ? (
-                <button
-                  className="builder-buttons"
-                  key={index}
-                  style={
-                    builder.includes(tag)
-                      ? { backgroundColor: "rgba(72, 244, 66, 0.5)" }
-                      : {}
-                  }
-                  onClick={() => this.addRemoveTagstoBuilder(tag)}
-                >
-                  {tag} <FiPlusCircle />
-                </button>
-              ) : null
-            )}
-            <div>
-              <CopyToClipboard
-                text={item.join().replace(/[ ]*,[ ]*|[ ]+/g, " ")}
-              >
-                <button className="copy">Copy Tags</button>
-              </CopyToClipboard>
-            </div>
-          </div>
-        );
-      } else {
-        return null;
-      }
-    });
   }
 
   mostPopularHashtags() {
@@ -289,7 +249,7 @@ class MainSearch extends Component {
 
   render() {
     const { actions, word, isFecthing, data, hashtagsData } = this.props;
-    const { activeTab, builder } = this.state;
+    const { activeTab, builder, showMostSearched } = this.state;
     return (
       <div className="search-bar-container">
         <Helmet>
@@ -325,7 +285,7 @@ class MainSearch extends Component {
             >
               Most Searched Tags
             </button>
-            {this.state.showMostSearched === true ? (
+            {showMostSearched === true ? (
               <div>
                 <p>{hashtagsData.length} times users searched for hashtags</p>
                 <ul>
@@ -392,9 +352,13 @@ class MainSearch extends Component {
         {!isFecthing && activeTab === "popular"
           ? this.mostPopularHashtags()
           : null}
-        {!isFecthing && activeTab === "mostused"
-          ? this.mostCommonHashtags()
-          : null}
+        <MostCommonHashtags
+          data={data}
+          builder={builder}
+          activeTab={activeTab}
+          isFecthing={isFecthing}
+          addRemoveTagstoBuilder={ tag => this.addRemoveTagstoBuilder(tag)}
+        />
         <div className="result">
           {!isFecthing && activeTab !== "builder" ? this.filterImages() : null}
         </div>

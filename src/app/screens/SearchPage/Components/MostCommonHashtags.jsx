@@ -31,7 +31,9 @@ const MostCommonHashtags = ({
                     ? { backgroundColor: "rgba(72, 244, 66, 0.5)" }
                     : {}
                 }
-                onClick={addRemoveTagstoBuilder(tag)}
+                onClick={() => {
+                  addRemoveTagstoBuilder(tag)
+                }}
               >
                 {tag} <FiPlusCircle />
               </button>
