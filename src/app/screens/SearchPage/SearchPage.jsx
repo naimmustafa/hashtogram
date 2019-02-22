@@ -12,6 +12,7 @@ import MostPopularHashtags from "./Components/MostPopularHashtags";
 import Photos from "./Components/Photos";
 import CompetitionLevel from "./Components/CompetitionLevel";
 import Builder from "./Components/Builder";
+import Spinner from "./Components/Spinner";
 // import MostCommonHashtags from "./Components/MostCommonHashtags"
 
 // npm imports
@@ -21,7 +22,6 @@ import { Helmet } from "react-helmet";
 import { sortData } from "../../utils/scrapers/sorting";
 
 // assest
-import { ClipLoader } from "react-spinners";
 import { FaSistrix } from "react-icons/fa";
 
 // Component
@@ -70,12 +70,6 @@ class MainSearch extends Component {
     } else {
       this.setState({ builder: [...builder, tag] });
     }
-  }
-
-  // renders
-
-  spinner() {
-    return <ClipLoader size={18} color={"white"} />;
   }
 
   render() {
@@ -145,7 +139,7 @@ class MainSearch extends Component {
                 : () => alert("type something")
             }
           >
-            {isFecthing ? this.spinner() : <FaSistrix />}
+            {isFecthing ? <Spinner /> : <FaSistrix />}
           </button>
         </div>
         {data.length > 0 ? (
@@ -175,12 +169,12 @@ class MainSearch extends Component {
             </button>
           </div>
         ) : null}
-          <Builder
-            builder={builder}
-            activeTab={activeTab}
-            removeTag={tags => this.setState({ bulder: tags })}
-            clearTags={() => this.setState({ builder: [] })}
-          />
+        <Builder
+          builder={builder}
+          activeTab={activeTab}
+          removeTag={tags => this.setState({ bulder: tags })}
+          clearTags={() => this.setState({ builder: [] })}
+        />
         <CompetitionLevel
           data={data}
           isFecthing={isFecthing}
