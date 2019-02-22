@@ -11,25 +11,18 @@ import MostCommonHashtags from "./Components/MostCommonHashtags";
 import MostPopularHashtags from "./Components/MostPopularHashtags";
 import Photos from "./Components/Photos";
 import CompetitionLevel from "./Components/CompetitionLevel";
+import Builder from "./Components/Builder";
 // import MostCommonHashtags from "./Components/MostCommonHashtags"
 
 // npm imports
-import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Helmet } from "react-helmet";
-import _ from "lodash";
 
 // helpers
-import {
-  sortData,
-  leveler,
-  findLessCompetativeSort
-} from "../../utils/scrapers/sorting";
-import { competativeScraper } from "../../utils/scrapers/hashtagArray";
+import { sortData } from "../../utils/scrapers/sorting";
 
 // assest
 import { ClipLoader } from "react-spinners";
 import { FaSistrix } from "react-icons/fa";
-import { FiPlusCircle, FiMinusCircle } from "react-icons/fi";
 
 // Component
 class MainSearch extends Component {
@@ -80,82 +73,6 @@ class MainSearch extends Component {
   }
 
   // renders
-
-  renderLessCompetative() {
-    const { pagesAll, competeTags } = this.props;
-    const { builder } = this.state;
-    const newObj =
-      pagesAll.length > 0 ? findLessCompetativeSort(pagesAll, competeTags) : {};
-    let custarr = Object.entries(newObj).map(([key, value]) => value);
-    const sorted = _.chunk(custarr, 30).map(item => {
-      return item;
-    });
-    return sorted.map((item, index) =>
-      custarr.length > 0 ? (
-        <div key={index} className="result">
-          <h3>Best</h3>
-          {item.map((tag, index) =>
-            tag !== "undefined" ? (
-              <button
-                className="builder-buttons"
-                key={index}
-                onClick={() =>
-                  builder.includes(tag) || builder.length === 30
-                    ? null
-                    : this.setState({ builder: [...builder, tag] })
-                }
-              >
-                {tag} <FiPlusCircle />
-              </button>
-            ) : null
-          )}
-        </div>
-      ) : null
-    );
-  }
-
-  renderBuilder() {
-    const { builder } = this.state;
-    const tags = builder;
-    return builder.length > 0 ? (
-      <div className="result">
-        <h3>Builder {builder.length}</h3>
-        {builder.map((tag, index) =>
-          tag !== "undefined" ? (
-            <button
-              className="builder-buttons"
-              key={index}
-              onClick={() => {
-                let index = tags.indexOf(tag);
-                tags.splice(index, 1);
-                this.setState({ builder: tags });
-              }}
-            >
-              {tag} <FiMinusCircle />
-            </button>
-          ) : null
-        )}
-        <div>
-          <CopyToClipboard
-            text={builder.join().replace(/[ ]*,[ ]*|[ ]+/g, " ")}
-          >
-            <button className="copy">Copy Tags</button>
-          </CopyToClipboard>
-          <button
-            className="copy"
-            onClick={() => this.setState({ builder: [] })}
-          >
-            Clear All
-          </button>
-        </div>
-      </div>
-    ) : (
-      <div className="result">
-        <h3>Builder</h3>
-        <p>Added tags will be displayed here</p>
-      </div>
-    );
-  }
 
   spinner() {
     return <ClipLoader size={18} color={"white"} />;
@@ -258,8 +175,12 @@ class MainSearch extends Component {
             </button>
           </div>
         ) : null}
-        {activeTab === "popular" ? this.renderLessCompetative() : null}
-        {activeTab === "builder" ? this.renderBuilder() : null}
+          <Builder
+            builder={builder}
+            activeTab={activeTab}
+            removeTag={tags => this.setState({ bulder: tags })}
+            clearTags={() => this.setState({ builder: [] })}
+          />
         <CompetitionLevel
           data={data}
           isFecthing={isFecthing}
