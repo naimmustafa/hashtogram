@@ -15,10 +15,6 @@ import {
   TabBar
 } from "./Components";
 
-import { Helmet } from "react-helmet";
-
-import { sortData } from "../../utils/scrapers/sorting";
-
 class MainSearch extends Component {
   constructor(props) {
     super(props);
@@ -43,15 +39,6 @@ class MainSearch extends Component {
     actions.sendSearchData(tag);
   }
 
-  searchAll() {
-    const { data, actions } = this.props;
-    const sorted = sortData(data);
-    if (data.length > 0) {
-      actions.fetchDatas(sorted[this.state.count]);
-    }
-    return null;
-  }
-
   addRemoveTagstoBuilder(tag) {
     const { builder } = this.state;
     const tags = builder;
@@ -69,22 +56,6 @@ class MainSearch extends Component {
     const { activeTab, builder, showMostSearched } = this.state;
     return (
       <div className="search-bar-container">
-        <Helmet>
-          <meta
-            name="description"
-            content="Instagram related and best hashtag finder"
-          />
-          <meta
-            name="keywords"
-            content="instagram,content,createors,likes,followers,hashtag,besthashtag,getinstagramlikes,getinstagrafollowers,groworganically,organiclikes,organicfollowers"
-          />
-          <meta name="author" content="Naim Mustafa" />
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-          />
-        </Helmet>
-
         <div className="page-header">
           <p style={{fontSize: '8px'}}>version: 0.41</p>
           <h1 className="landing-content">Hashtogram </h1>
