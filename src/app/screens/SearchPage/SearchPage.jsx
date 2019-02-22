@@ -4,6 +4,11 @@ import { bindActionCreators } from "redux";
 import * as actions from "../../utils/actions";
 import "./mainSearch.css";
 
+// components
+
+import SearchedTags from "./Components/SearchedTags";
+// import MostCommonHashtags from "./Components/MostCommonHashtags"
+
 // npm imports
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Helmet } from "react-helmet";
@@ -72,28 +77,6 @@ class MainSearch extends Component {
   }
 
   // renders
-
-  getSearchedTags() {
-    const { hashtagsData } = this.props;
-    const count = hashtagsData.reduce((hashtag, amount) => {
-      hashtag[amount] = (hashtag[amount] || 0) + 1;
-      return hashtag;
-    }, {});
-    return Object.entries(count).map(([key, value]) =>
-      value >= 5 ? (
-        <li
-          key={key}
-          onClick={() => {
-            this.handleSearch(key);
-            this.setState({ showMostSearched: false });
-          }}
-        >
-          #{key}
-          <span>{value}</span>
-        </li>
-      ) : null
-    );
-  }
 
   competativeLevel() {
     const { data } = this.props;
@@ -344,10 +327,14 @@ class MainSearch extends Component {
             </button>
             {this.state.showMostSearched === true ? (
               <div>
-                <p>
-                  {hashtagsData.length} times users searched for hashtags
-                </p>
-                <ul>{this.getSearchedTags()}</ul>
+                <p>{hashtagsData.length} times users searched for hashtags</p>
+                <ul>
+                  <SearchedTags
+                    hashtagsData={hashtagsData}
+                    actions={actions}
+                    close={() => this.setState({ showMostSearched: false })}
+                  />
+                </ul>
               </div>
             ) : null}
           </div>
