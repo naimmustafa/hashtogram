@@ -4,7 +4,7 @@ import MostCommonHashtags from "./MostCommonHashtags";
 import MostPopularHashtags from "./MostPopularHashtags";
 import Photos from "./Photos";
 import SearchedTags from "./SearchedTags";
-import Spinner from "./Spinner";
+import SearchBar from "./SearchBar";
 import TabBar from "./TabBar";
 
 export {
@@ -14,6 +14,6 @@ export {
   MostPopularHashtags,
   Photos,
   SearchedTags,
-  Spinner,
+  SearchBar,
   TabBar,
 }

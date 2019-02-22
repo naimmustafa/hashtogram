@@ -64,15 +64,15 @@ export const commonSorted = data => {
 
 export const leveler = postNumber => {
     if (postNumber <= 50000) {
-      return "Not Competative";
+      return "Not Competitive";
     } else if (postNumber <= 150000 && postNumber > 50000) {
-      return "Slightly Competative";
+      return "Slightly Competitive";
     } else if (postNumber <= 1500000 && postNumber > 150000) {
-      return "Competative";
+      return "Competitive";
     } else if (postNumber <= 5000000 && postNumber > 1500000) {
-      return "Very Competative";
+      return "Very Competitive";
     } else {
-      return "Extremely Competative";
+      return "Extremely Competitive";
     }
   }
 

@@ -11,12 +11,11 @@ import {
   MostPopularHashtags,
   Photos,
   SearchedTags,
-  Spinner,
+  SearchBar,
   TabBar
 } from "./Components";
 
 import { Helmet } from "react-helmet";
-import { FaSistrix } from "react-icons/fa";
 
 import { sortData } from "../../utils/scrapers/sorting";
 
@@ -37,8 +36,6 @@ class MainSearch extends Component {
     const { actions } = this.props;
     actions.getSearchData();
   }
-
-  // functions
 
   handleSearch(tag) {
     const { actions } = this.props;
@@ -89,7 +86,8 @@ class MainSearch extends Component {
         </Helmet>
 
         <div className="page-header">
-          <h1 className="landing-content">Hashtogram</h1>
+          <p style={{fontSize: '8px'}}>version: 0.41</p>
+          <h1 className="landing-content">Hashtogram </h1>
           <p className="landing-content">
             ( Find better hashtags for your Instagram )
           </p>
@@ -119,24 +117,12 @@ class MainSearch extends Component {
             ) : null}
           </div>
         </div>
-        <div className="content-container">
-          <input
-            type="text"
-            placeholder="Search.."
-            name="search"
-            onChange={event => actions.searchWord(event.target.value)}
-          />
-          <button
-            type="button"
-            onClick={
-              word.length > 0
-                ? () => this.handleSearch(word)
-                : () => alert("type something")
-            }
-          >
-            {isFecthing ? <Spinner /> : <FaSistrix />}
-          </button>
-        </div>
+        <SearchBar
+          word={word}
+          isFecthing={isFecthing}
+          searchWord={word => actions.searchWord(word)}
+          handleSearch={word => this.handleSearch(word)}
+        />
         <TabBar
           data={data}
           activeTab={activeTab}
